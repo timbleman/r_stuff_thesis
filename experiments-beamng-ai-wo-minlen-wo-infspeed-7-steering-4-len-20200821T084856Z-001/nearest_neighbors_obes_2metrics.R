@@ -102,6 +102,10 @@ dframe_bxplt <- data.frame(
 	Metric = metric_used
 )
 
+# set colors for the plot
+cols <- c("brown3", "cadetblue3")
+names(cols) <- c(metric1, metric2)
+
 pick <- function(condition){
   function(d) d %>% filter_(condition)
 }
@@ -109,7 +113,8 @@ pick <- function(condition){
 dframe_bxplt$Threshold <- as.factor(dframe_bxplt$Threshold) 
 ggplot(dframe_bxplt, aes(x=Threshold, y=OBE_Ratios)) +
 	geom_boxplot(aes(fill=Metric)) + 
-	geom_line(data=pick(~Metric== metric1), aes(y=Avg_NB, group=1), size=2) + 
-	geom_line(data=pick(~Metric== metric2), aes(y=Avg_NB, group=1), size=2) +
-	scale_x_discrete(limits=rev(levels(as.factor(dframe_bxplt$Threshold))))
+	geom_line(data=pick(~Metric== metric1), aes(y=Avg_NB, group=1, color=cols[metric1]), size=2) + 
+	geom_line(data=pick(~Metric== metric2), aes(y=Avg_NB, group=1, color=cols[metric2]), size=2) +
+	scale_x_discrete(limits=rev(levels(as.factor(dframe_bxplt$Threshold)))) + 
+	scale_fill_manual(values = cols)
 
