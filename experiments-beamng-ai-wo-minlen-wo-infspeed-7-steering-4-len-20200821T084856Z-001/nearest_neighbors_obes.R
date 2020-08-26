@@ -13,9 +13,9 @@ tests_that_fail <- row.names(for_each_num_obes)[for_each_num_obes$num_obes == 1]
 vals_of_interest <- c("0.98" = 0.0,
 				"0.95" = 0.0, 
 				"0.9" = 0.0,
+				"0.85" = 0.0,
 				"0.8" = 0.0,
-				"0.7" = 0.0,
-				"0.5" = 0.0,
+				"0.6" = 0.0,
 				"0.0" = 0.0)
 #vals_of_interest <- c("0.9" = 0.0)
 name = "jaccard.csv"
@@ -37,6 +37,9 @@ GREATER_THAN = TRUE
 # list for boxplot
 all_ratios_list <- vector(mode = "list", length = length(vals_of_interest))
 names(all_ratios_list) <- names(vals_of_interest)
+# vector to gather all ratio vals
+all_ratios_vec <- rep(0, length(vals_of_interest)*length(tests_that_fail))
+all_ratios_vec_i <- 1
 
 for (val_str in names(vals_of_interest)){
 	threshold = as.numeric(val_str)
@@ -46,7 +49,7 @@ for (val_str in names(vals_of_interest)){
 	sum_num_nb <- 0  
 
 	# gather all ratios for box plots
-	all_ratios = rep(NA, length(similarity_matrix))
+	all_ratios = rep(NA, length(tests_that_fail))
 	all_ratios_i <- 1
 	
 	# maybe count the unique neighbors?
@@ -85,6 +88,9 @@ for (val_str in names(vals_of_interest)){
 		# add own ratio to list
 		all_ratios[all_ratios_i] <- obes_ratio
 		all_ratios_i <- all_ratios_i + 1
+		# fill complete vector
+		all_ratios_vec[all_ratios_vec_i] <- obes_ratio
+		all_ratios_vec_i <- all_ratios_vec_i + 1
 	}
 	avg_obes_ratio_threshold <- sum_obes_ratio_threshold / length(tests_that_fail)
 	avg_num_nb <- sum_num_nb / length(tests_that_fail)
@@ -102,7 +108,7 @@ for (val_str in names(vals_of_interest)){
 
 	# add all ratios for the current threshold
 	all_ratios_list[[val_str]] <- all_ratios
-	print(paste("close neighbors at ", val_str, "len all_ratios", length(all_ratios)))
+	print(paste("len allratios at ", val_str, "len all_ratios", length(all_ratios)))
 }
 
 
@@ -124,6 +130,8 @@ ggplot(dframe_lnplt, aes(x=Threshold)) +
 		
 
 #Boxplot
+# the dataframe must have many values, create a dataframe that can do that
+# this might be more wise to do above
 t_holds_repeated <- rep(0, length(all_ratios)*length(vals_of_interest))
 for (i in 1:length(vals_of_interest)){
 	offset <- (i-1)*length(all_ratios)
@@ -131,7 +139,21 @@ for (i in 1:length(vals_of_interest)){
 		t_holds_repeated[offset+j] <- as.numeric(names(vals_of_interest)[i])
 	}
 }
+sampled_nb_repeated <- rep(0, length(all_ratios)*length(vals_of_interest))
+for (i in 1:length(vals_of_interest)){
+	offset <- (i-1)*length(all_ratios)
+	for (j in 1:length(all_ratios)){
+		sampled_nb_repeated[offset+j] <- sampled_avg_nb[i]
+	}
+}
 
 dframe_bxplt <- data.frame(
-	Threshold = t_holds,
+	Threshold = t_holds_repeated,
+	OBE_Ratios = all_ratios_vec,
+	Avg_NB = sampled_nb_repeated
 	)
+dframe_bxplt$Threshold <- as.factor(dframe_bxplt$Threshold) 
+ggplot(dframe_bxplt, aes(x=reorder(Threshold, desc(Threshold)), y=OBE_Ratios)) +
+		geom_boxplot() + 
+		geom_line(aes(y=Avg_NB, group=1), size=2)
+		# scale_x_discrete(limits=rev(levels(Threshold)))
