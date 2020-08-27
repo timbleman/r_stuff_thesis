@@ -1,13 +1,15 @@
 # library(ggplot2)   # is there something like requirements?
 
-#setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
-setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
+setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
+#setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
 
 
 # get obe count for all tests and extract the ones that fail
 for_each_num_obes <- read.csv("for_each_num_obes.csv" , row.names=1)
 tests_that_fail <- row.names(for_each_num_obes)[for_each_num_obes$num_obes == 1]
 
+
+BOXPLOT_INSTEAD_OF_LINEPLOT = TRUE
 
 # adjust these two
 vals_of_interest <- c("0.98" = 0.0,
@@ -111,49 +113,49 @@ for (val_str in names(vals_of_interest)){
 	print(paste("len allratios at ", val_str, "len all_ratios", length(all_ratios)))
 }
 
-
-# Lineplot
-# Make a lineplot of 
-t_holds <- as.numeric(names(vals_of_interest))
-dframe_lnplt <- data.frame(
-	Threshold = t_holds,
-	OBE_Ratios = vals_of_interest,
-	Sampled_NB = sampled_neighborhood,
-	Avg_NB = sampled_avg_nb
-)
-ggplot(dframe_lnplt, aes(x=Threshold)) + 
+if (!BOXPLOT_INSTEAD_OF_LINEPLOT){
+	# Lineplot
+	# Make a lineplot of 
+	t_holds <- as.numeric(names(vals_of_interest))
+	dframe_lnplt <- data.frame(
+		Threshold = t_holds,
+		OBE_Ratios = vals_of_interest,
+		Sampled_NB = sampled_neighborhood,
+		Avg_NB = sampled_avg_nb
+	)
+	ggplot(dframe_lnplt, aes(x=Threshold)) + 
 		geom_line(aes(y=OBE_Ratios, colour="Avg OBE ratio"), size=2) + 
 		geom_line(aes(y=Avg_NB, colour="Avg sampled area")) +
 		scale_color_manual("", breaks = c("Avg OBE ratio", "Avg sampled area"), 
 						values = c("red", "blue")) +
 		ggtitle("OBE ratio to jaccard similarity") 
-		
-
-#Boxplot
-# the dataframe must have many values, create a dataframe that can do that
-# this might be more wise to do above
-t_holds_repeated <- rep(0, length(all_ratios)*length(vals_of_interest))
-for (i in 1:length(vals_of_interest)){
-	offset <- (i-1)*length(all_ratios)
-	for (j in 1:length(all_ratios)){
-		t_holds_repeated[offset+j] <- as.numeric(names(vals_of_interest)[i])
+} else {
+	#Boxplot
+	# the dataframe must have many values, create a dataframe that can do that
+	# this might be more wise to do above
+	t_holds_repeated <- rep(0, length(all_ratios)*length(vals_of_interest))
+	for (i in 1:length(vals_of_interest)){
+		offset <- (i-1)*length(all_ratios)
+		for (j in 1:length(all_ratios)){
+			t_holds_repeated[offset+j] <- as.numeric(names(vals_of_interest)[i])
+		}
 	}
-}
-sampled_nb_repeated <- rep(0, length(all_ratios)*length(vals_of_interest))
-for (i in 1:length(vals_of_interest)){
-	offset <- (i-1)*length(all_ratios)
-	for (j in 1:length(all_ratios)){
-		sampled_nb_repeated[offset+j] <- sampled_avg_nb[i]
+	sampled_nb_repeated <- rep(0, length(all_ratios)*length(vals_of_interest))
+	for (i in 1:length(vals_of_interest)){
+		offset <- (i-1)*length(all_ratios)
+		for (j in 1:length(all_ratios)){
+			sampled_nb_repeated[offset+j] <- sampled_avg_nb[i]
+		}
 	}
-}
 
-dframe_bxplt <- data.frame(
-	Threshold = t_holds_repeated,
-	OBE_Ratios = all_ratios_vec,
-	Avg_NB = sampled_nb_repeated
-	)
-dframe_bxplt$Threshold <- as.factor(dframe_bxplt$Threshold) 
-ggplot(dframe_bxplt, aes(x=reorder(Threshold, desc(Threshold)), y=OBE_Ratios)) +
+	dframe_bxplt <- data.frame(
+		Threshold = t_holds_repeated,
+		OBE_Ratios = all_ratios_vec,
+		Avg_NB = sampled_nb_repeated
+		)
+	dframe_bxplt$Threshold <- as.factor(dframe_bxplt$Threshold) 
+	ggplot(dframe_bxplt, aes(x=Threshold, y=OBE_Ratios)) +
 		geom_boxplot() + 
-		geom_line(aes(y=Avg_NB, group=1), size=2)
-		# scale_x_discrete(limits=rev(levels(Threshold)))
+		geom_line(aes(y=Avg_NB, group=1), size=2) + 
+		scale_x_discrete(limits=rev(levels(as.factor(dframe_bxplt$Threshold))))
+}
