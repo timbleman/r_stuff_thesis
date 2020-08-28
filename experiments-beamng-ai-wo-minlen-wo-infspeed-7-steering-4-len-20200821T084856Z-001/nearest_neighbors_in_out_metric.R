@@ -12,7 +12,8 @@ vals_of_interest <- c("0.95" = 0.0,
 				"0.0" = 0.0)
 # uncomment for jaccard
 metric_in = "jaccard_11ang.csv"
-metric_out = "steering_speed_dist.csv"
+#metric_out = "steering_speed_dist.csv"
+metric_out = "steering_dist_binary.csv"
 
 
 # bool to control what neighbors are taken
@@ -94,6 +95,8 @@ fill_ratio_nb_io <- function(start_index, metric_in_name, metric_out_name){
 					union_size <- union_size + 1
 				}
 			}
+
+			# TODO maybe normalize by sample size or something?
 			union_ratio <- union_size/length(close_neighbors)
 			# add to all ratios vector
 			all_ratios_vec[start_index] <<- union_ratio
