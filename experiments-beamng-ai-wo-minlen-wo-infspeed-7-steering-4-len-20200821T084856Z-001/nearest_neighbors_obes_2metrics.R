@@ -15,9 +15,31 @@ vals_of_interest <- c("0.98" = 0.0,
 				"0.8" = 0.0,
 				"0.6" = 0.0,
 				"0.0" = 0.0)
+# uncomment for jaccard
+#metric1 = "jaccard.csv"
+#metric2 = "jaccard_11ang.csv"
+# uncomment for jaccard 11 vs 15
+#metric1 = "jaccard_11ang.csv"
+#metric2 = "jaccard_15ang.csv"
+# uncomment for sliding window 1d vs 2d
+#metric1 = "curve_sdl_dist.csv"
+#metric2 = "sdl_2d_dist.csv"
+# uncomment for sliding window 1d alphabet size
+#metric1 = "curve_sdl_dist.csv"
+#metric2 = "curve_sdl_dist_11ang.csv"
+# uncomment for sliding window 2d alphabet size
+#metric1 = "sdl_2d_dist.csv"
+#metric2 = "sdl_2d_dist_11ang.csv"
+# uncomment for sliding window 1d vs 2d 11ang
+#metric1 = "curve_sdl_dist_11ang.csv"
+#metric2 = "sdl_2d_dist_11ang.csv"
+# uncomment for center dist distances
+metric1 = "center_dist_binary.csv"
+metric2 = "center_dist_single.csv"
+# uncommment for steering only distances
+#metric1 = "steering_dist_binary.csv"
+#metric2 = "steering_dist_single.csv"
 
-metric1 = "jaccard.csv"
-metric2 = "sdl_2d_dist.csv"
 
 # bool to control what neighbors are taken
 GREATER_THAN = TRUE
@@ -113,8 +135,8 @@ pick <- function(condition){
 dframe_bxplt$Threshold <- as.factor(dframe_bxplt$Threshold) 
 ggplot(dframe_bxplt, aes(x=Threshold, y=OBE_Ratios)) +
 	geom_boxplot(aes(fill=Metric)) + 
-	geom_line(data=pick(~Metric== metric1), aes(y=Avg_NB, group=1, color=cols[metric1]), size=2) + 
-	geom_line(data=pick(~Metric== metric2), aes(y=Avg_NB, group=1, color=cols[metric2]), size=2) +
+	geom_line(data=pick(~Metric== metric1), aes(y=Avg_NB, group=1, color=cols[metric1]), size=2, show.legend=FALSE) + 
+	geom_line(data=pick(~Metric== metric2), aes(y=Avg_NB, group=1, color=cols[metric2]), size=2, show.legend=FALSE) +
 	scale_x_discrete(limits=rev(levels(as.factor(dframe_bxplt$Threshold)))) + 
 	scale_fill_manual(values = cols)
 
