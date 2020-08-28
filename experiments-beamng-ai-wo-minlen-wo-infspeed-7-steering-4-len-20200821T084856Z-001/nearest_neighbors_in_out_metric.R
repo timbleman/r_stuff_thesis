@@ -4,25 +4,24 @@ library(ggplot2)
 setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
 
 # do not get filled, remaining from previous single metric plotting
-vals_of_interest <- c("0.98" = 0.0,
-				"0.95" = 0.0, 
+vals_of_interest <- c("0.95" = 0.0, 
 				"0.9" = 0.0,
 				"0.85" = 0.0,
-				"0.8" = 0.0,
 				"0.7" = 0.0,
-				"0.6" = 0.0,
 				"0.5" = 0.0,
 				"0.0" = 0.0)
 # uncomment for jaccard
-metric_in = "jaccard.csv"
-metric_out = "jaccard_11ang.csv"
+metric_in = "jaccard_11ang.csv"
+metric_out = "steering_speed_dist.csv"
 
 
 # bool to control what neighbors are taken
 GREATER_THAN = TRUE
 
 
-len_observations = length(vals_of_interest)*length(all_tests)
+# this is stupid, the matrix is needed just for its length
+similarity_matrix <- read.csv(metric_in, check.names=FALSE, row.names=1)
+len_observations = length(vals_of_interest)*length(similarity_matrix)
 # all thresholds repeated
 t_holds_repeated <- rep(0, len_observations)
 
@@ -97,8 +96,7 @@ fill_ratio_nb_io <- function(start_index, metric_in_name, metric_out_name){
 			}
 			union_ratio <- union_size/length(close_neighbors)
 			# add to all ratios vector
-			all_ratios_vec[start_index] <- union_ratio
-			start_index <- start_index + 1
+			all_ratios_vec[start_index] <<- union_ratio
 
 			# fill in the threshold
 			t_holds_repeated[start_index] <<- threshold
@@ -125,3 +123,8 @@ dframe_bxplt <- data.frame(
 	Avg_NB = sampled_avg_nb
 	)
 
+dframe_bxplt$Threshold <- as.factor(dframe_bxplt$Threshold) 
+ggplot(dframe_bxplt, aes(x=Threshold, y=Union_Ratios)) +
+	geom_boxplot() + 
+	geom_line(aes(y=Avg_NB, group=1), size=2) + 
+	scale_x_discrete(limits=rev(levels(as.factor(dframe_bxplt$Threshold))))
