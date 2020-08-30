@@ -9,23 +9,24 @@ for_each_num_obes <- read.csv("for_each_num_obes.csv")
 
 tests_that_fail <- for_each_num_obes[for_each_num_obes$num_obes == 1, ]
 
-#input_names_to_load <- list("jaccard.csv" = NA, "sdl_2d_dist.csv" = NA,
-#					"sdl_2d_k_lcstr_dist.csv" = NA,
-#					"curve_sdl_dist.csv" = NA,
-#					"cur_sdl_k_lcstr_dist.csv" = NA,
-#					"cur_sdl_lcs_dist.csv" = NA)
-input_names_to_load <- list ("cur_sdl_lcs_dist.csv" = NA,
-					"cur_sdl_lcstr_dist.csv" = NA,
-					"cur_sdl_1_lcstr_dist.csv" = NA,
-					"cur_sdl_2_lcstr_dist.csv" = NA,
-					"cur_sdl_3_lcstr_dist.csv" = NA,
-					"cur_sdl_5_lcstr_dist.csv" = NA,
-					"sdl_2d_lcs_dist.csv" = NA,
-					"sdl_2d_lcstr_dist.csv" = NA,
-					"sdl_2d_1_lcstr_dist.csv" = NA,
-					"sdl_2d_2_lcstr_dist.csv" = NA,
-					"sdl_2d_3_lcstr_dist.csv" = NA,
-					"sdl_2d_5_lcstr_dist.csv" = NA)
+input_names_to_load <- list("jaccard.csv" = NA, 
+					"jaccard_11ang.csv" = NA,
+					"jaccard_15ang.csv" = NA,
+					"sdl_2d_dist.csv" = NA,
+					"sdl_2d_dist_11ang.csv" = NA,
+					"curve_sdl_dist.csv" = NA)
+#input_names_to_load <- list ("cur_sdl_lcs_dist.csv" = NA,
+#					"cur_sdl_lcstr_dist.csv" = NA,
+#					"cur_sdl_1_lcstr_dist.csv" = NA,
+#					"cur_sdl_2_lcstr_dist.csv" = NA,
+#					"cur_sdl_3_lcstr_dist.csv" = NA,
+#					"cur_sdl_5_lcstr_dist.csv" = NA,
+#					"sdl_2d_lcs_dist.csv" = NA,
+#					"sdl_2d_lcstr_dist.csv" = NA,
+#					"sdl_2d_1_lcstr_dist.csv" = NA,
+#					"sdl_2d_2_lcstr_dist.csv" = NA,
+#					"sdl_2d_3_lcstr_dist.csv" = NA,
+#					"sdl_2d_5_lcstr_dist.csv" = NA)
 
 
 # Load all the csvs for the names 
@@ -67,7 +68,7 @@ for (in_dist_name in names(input_names_to_load)){
 		sum_p_vals <- sum_p_vals + p_val
 	}
 	# TODO does the - make sense?
-	avg_current <- -sum_cors/as.numeric(length(names_of_tests_that_fail))
+	avg_current <- sum_cors/as.numeric(length(names_of_tests_that_fail))
 	avgs[in_dist_name] <- avg_current
 	print(paste("Average obe correlation for ", in_dist_name, avg_current))
 	avg_p_val <-  sum_p_vals/as.numeric(length(names_of_tests_that_fail))

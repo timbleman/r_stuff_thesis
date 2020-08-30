@@ -13,14 +13,16 @@ vals_of_interest <- c("0.98" = 0.0,
 				"0.9" = 0.0,
 				"0.85" = 0.0,
 				"0.8" = 0.0,
+				"0.7" = 0.0,
 				"0.6" = 0.0,
+				"0.5" = 0.0,
 				"0.0" = 0.0)
 # uncomment for jaccard
 #metric1 = "jaccard.csv"
 #metric2 = "jaccard_11ang.csv"
 # uncomment for jaccard 11 vs 15
-#metric1 = "jaccard_11ang.csv"
-#metric2 = "jaccard_15ang.csv"
+metric1 = "jaccard_11ang.csv"
+metric2 = "jaccard_15ang.csv"
 # uncomment for sliding window 1d vs 2d
 #metric1 = "curve_sdl_dist.csv"
 #metric2 = "sdl_2d_dist.csv"
@@ -34,8 +36,8 @@ vals_of_interest <- c("0.98" = 0.0,
 #metric1 = "curve_sdl_dist_11ang.csv"
 #metric2 = "sdl_2d_dist_11ang.csv"
 # uncomment for center dist distances
-metric1 = "center_dist_binary.csv"
-metric2 = "center_dist_single.csv"
+#metric1 = "center_dist_binary.csv"
+#metric2 = "center_dist_single.csv"
 # uncommment for steering only distances
 #metric1 = "steering_dist_binary.csv"
 #metric2 = "steering_dist_single.csv"

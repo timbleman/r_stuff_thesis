@@ -1,13 +1,14 @@
 # compute mantel distances for various input and output
+library(vegan)
 
 # path to tests
 setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
 
-input_names_to_load <- list("jaccard.csv" = NA, "sdl_2d_dist.csv" = NA,
-					"sdl_2d_k_lcstr_dist.csv" = NA,
-					"curve_sdl_dist.csv" = NA,
-					"cur_sdl_k_lcstr_dist.csv" = NA,
-					"cur_sdl_lcs_dist.csv" = NA)
+input_names_to_load <- list("jaccard.csv" = NA, 
+					"jaccard_11ang.csv" = NA,
+					"jaccard_15ang.csv" = NA,
+					"sdl_2d_dist.csv" = NA,
+					"curve_sdl_dist.csv" = NA)
 
 for (name in names(input_names_to_load)){	
 	c <- read.csv(name)

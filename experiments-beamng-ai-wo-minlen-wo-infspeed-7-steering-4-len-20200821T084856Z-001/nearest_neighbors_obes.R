@@ -1,7 +1,7 @@
 # library(ggplot2)   # is there something like requirements?
 
-setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
-#setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
+#setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
+setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
 
 
 # get obe count for all tests and extract the ones that fail
@@ -20,9 +20,11 @@ vals_of_interest <- c("0.98" = 0.0,
 				"0.6" = 0.0,
 				"0.0" = 0.0)
 #vals_of_interest <- c("0.9" = 0.0)
-name = "jaccard.csv"
-#name = "cur_sdl_5_lcstr_dist.csv"
+#name = "jaccard.csv"
+name = "cur_sdl_1_lcstr_dist.csv"
 #name = "sdl_2d_dist.csv"
+#name = "speering_speed_dist.csv"
+
 similarity_matrix <- read.csv(name, check.names=FALSE, row.names=1)   # , row.names=1   # messes with row extraction
 
 # write the mutual sampled neighborhood of all

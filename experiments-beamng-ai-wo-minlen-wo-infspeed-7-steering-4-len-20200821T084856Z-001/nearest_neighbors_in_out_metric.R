@@ -7,13 +7,17 @@ setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-l
 vals_of_interest <- c("0.95" = 0.0, 
 				"0.9" = 0.0,
 				"0.85" = 0.0,
+				"0.8" = 0.0,
 				"0.7" = 0.0,
 				"0.5" = 0.0,
 				"0.0" = 0.0)
 # uncomment for jaccard
-metric_in = "jaccard_11ang.csv"
-#metric_out = "steering_speed_dist.csv"
-metric_out = "steering_dist_binary.csv"
+#metric_in = "jaccard.csv"
+#metric_in = "jaccard_11ang.csv"
+#metric_in = "jaccard_15ang.csv"
+metric_in = "sdl_2d_dist_11ang.csv"
+metric_out = "steering_speed_dist.csv"
+#metric_out = "steering_dist_binary.csv"
 
 
 # bool to control what neighbors are taken
