@@ -4,25 +4,23 @@ library(egg)  # for having plots stacked
 
 
 setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
-#setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
+setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
 
 
-BOXPLOT_INSTEAD_OF_LINEPLOT = FALSE
-# either 2 or 3!
-NUMBER_OF_METRICS = 2
-
+STEPLINE_INSTEAD_OF_LINEPLOT = TRUE
+# from 1 to 3
+NUMBER_OF_METRICS = 3
 
 # get obe count for all tests and extract the ones that fail
 for_each_num_obes <- read.csv("for_each_num_obes.csv" , row.names=1)
 tests_that_fail <- row.names(for_each_num_obes)[for_each_num_obes$num_obes == 1]
 
 # do not get filled, remaining from previous single metric plotting
-vals_of_interest <- c("0.95" = 0.0, 
+vals_of_interest <- c("0.98" = 0.0,
+				"0.95" = 0.0, 
 				"0.9" = 0.0,
 				"0.85" = 0.0,
-				"0.8" = 0.0,
-				"0.7" = 0.0,
-				"0.6" = 0.0,
+				"0.75" = 0.0,
 				"0.0" = 0.0)
 # uncomment for jaccard
 metric1 = "jaccard_28alph.csv"
@@ -117,10 +115,12 @@ fill_ratio_nb <- function(start_index, metric_name){
 }
 
 nb_vec1 <- fill_ratio_nb(1, metric1)
-new_index <- len_observations/3 + 1
-nb_vec2 <- fill_ratio_nb(new_index, metric2)
+if (NUMBER_OF_METRICS >= 2){
+	new_index <- len_observations/NUMBER_OF_METRICS + 1
+	nb_vec2 <- fill_ratio_nb(new_index, metric2)
+}
 if (NUMBER_OF_METRICS >= 3){
-	new_index <- 2*(len_observations/3) + 1
+	new_index <- 2*(len_observations/NUMBER_OF_METRICS) + 1
 	nb_vec3 <- fill_ratio_nb(new_index, metric3)
 }
 
@@ -131,13 +131,21 @@ dframe_bxplt <- data.frame(
 	Metric = metric_used
 )
 
+
+# dataframe for continuos lineplot
+dframe_lnplt <- data.frame(
+	Threshold = names(vals_of_interest),
+	Avg_NB_1 = nb_vec1
+)
+
+if (NUMBER_OF_METRICS == 2){
+	# set colors for the plot
+	cols <- c("brown3")
+	names(cols) <- c(metric1)
+}
 if (NUMBER_OF_METRICS == 2){
 	# dataframe for continuos lineplot
-	dframe_lnplt <- data.frame(
-		Threshold = names(vals_of_interest),
-		Avg_NB_1 = nb_vec1, 
-		Avg_NB_2 = nb_vec2
-	)
+	dframe_lnplt$Avg_NB_2 = nb_vec2
 
 	# set colors for the plot
 	cols <- c("brown3", "cadetblue3")
@@ -145,13 +153,9 @@ if (NUMBER_OF_METRICS == 2){
 }
 if (NUMBER_OF_METRICS == 3){
 	# dataframe for continuos lineplot
-	dframe_lnplt <- data.frame(
-		Threshold = names(vals_of_interest),
-		Avg_NB_1 = nb_vec1, 
-		Avg_NB_2 = nb_vec2, 
-		Avg_NB_3 = nb_vec3 
-	)
-
+	dframe_lnplt$Avg_NB_2 = nb_vec2
+	dframe_lnplt$Avg_NB_3 = nb_vec3
+	
 	# set colors for the plot
 	cols <- c("brown3", "cadetblue3", "green")
 	names(cols) <- c(metric1, metric2, metric3)
@@ -169,36 +173,45 @@ bx_plots <- ggplot(dframe_bxplt, aes(x=Threshold, y=OBE_Ratios)) +
 	scale_color_manual(values=cols) + 
 	theme(axis.text.x=element_blank(), axis.title.x=element_blank())  # remove x axis for upper plot
 
-if (NUMBER_OF_METRICS == 2){
-	if (BOXPLOT_INSTEAD_OF_LINEPLOT){
-		ln_plots <- ggplot(dframe_bxplt, aes(x=Threshold, y=OBE_Ratios)) +
+base_stp_line <- ggplot(dframe_bxplt, aes(x=Threshold, y=OBE_Ratios)) +
 			geom_line(data=pick(~Metric== metric1), aes(y=Avg_NB, group=1, color=cols[metric1]), size=2, show.legend=FALSE) + 
-			geom_line(data=pick(~Metric== metric2), aes(y=Avg_NB, group=1, color=cols[metric2]), size=2, show.legend=FALSE) +
 			scale_x_discrete(limits=rev(levels(as.factor(dframe_bxplt$Threshold))))
-	} else {
-		ln_plots <- ggplot(dframe_lnplt, aes(x=Threshold)) +
+
+base_connected_line <- ln_plots <- ggplot(dframe_lnplt, aes(x=Threshold)) +
 			geom_line(aes(y=Avg_NB_1, group=1, color=cols[metric1]), size=2, show.legend=FALSE) +
+			scale_x_discrete(limits=rev(levels(as.factor(dframe_lnplt$Threshold)))) +
+			labs(y="Avg_Neighborhood")
+
+if (STEPLINE_INSTEAD_OF_LINEPLOT){
+	if (NUMBER_OF_METRICS == 1){
+		ln_plots <- base_stp_line
+	}
+	if (NUMBER_OF_METRICS == 2){
+		ln_plots <- base_stp_line +
+			geom_line(data=pick(~Metric== metric2), aes(y=Avg_NB, group=1, color=cols[metric2]), size=2, show.legend=FALSE)
+	}
+	if (NUMBER_OF_METRICS == 3){
+		ln_plots <- base_stp_line +
+			geom_line(data=pick(~Metric== metric2), aes(y=Avg_NB, group=1, color=cols[metric2]), size=2, show.legend=FALSE) +
+			geom_line(data=pick(~Metric== metric3), aes(y=Avg_NB, group=1, color=cols[metric3]), size=2, show.legend=FALSE)
+	}
+} else {
+	if (NUMBER_OF_METRICS == 1){
+		ln_plots <- base_connected_line
+	}
+	if (NUMBER_OF_METRICS == 2){
+		ln_plots <- base_connected_line +
+			geom_line(aes(y=Avg_NB_2, group=1, color=cols[metric2]), size=2, show.legend=FALSE)
+	}
+	if (NUMBER_OF_METRICS == 3){
+		ln_plots <- base_connected_line +
 			geom_line(aes(y=Avg_NB_2, group=1, color=cols[metric2]), size=2, show.legend=FALSE) +
-			scale_x_discrete(limits=rev(levels(as.factor(dframe_lnplt$Threshold))))
+			geom_line(aes(y=Avg_NB_3, group=1, color=cols[metric3]), size=2, show.legend=FALSE)
 	}
 }
-if (NUMBER_OF_METRICS == 3){
-	if (BOXPLOT_INSTEAD_OF_LINEPLOT){
-		ln_plots <- ggplot(dframe_bxplt, aes(x=Threshold, y=OBE_Ratios)) +
-			geom_line(data=pick(~Metric== metric1), aes(y=Avg_NB, group=1, color=cols[metric1]), size=2, show.legend=FALSE) + 
-			geom_line(data=pick(~Metric== metric2), aes(y=Avg_NB, group=1, color=cols[metric2]), size=2, show.legend=FALSE) +
-			geom_line(data=pick(~Metric== metric3), aes(y=Avg_NB, group=1, color=cols[metric3]), size=2, show.legend=FALSE) +
-			scale_x_discrete(limits=rev(levels(as.factor(dframe_bxplt$Threshold))))
-	} else {
-		ln_plots <- ggplot(dframe_lnplt, aes(x=Threshold)) +
-			geom_line(aes(y=Avg_NB_1, group=1, color=cols[metric1]), size=2, show.legend=FALSE) +
-			geom_line(aes(y=Avg_NB_2, group=1, color=cols[metric2]), size=2, show.legend=FALSE) +
-			geom_line(aes(y=Avg_NB_3, group=1, color=cols[metric3]), size=2, show.legend=FALSE) +
-			scale_x_discrete(limits=rev(levels(as.factor(dframe_lnplt$Threshold))))
-	}
-}
+
+
 ln_plots
-#cowplot::plot_grid(bx_plots, ln_plots, align="v", ncol=1)
 egg::ggarrange(bx_plots, ln_plots)
 
 # TODO add library(egg) and library(cowplot)
