@@ -1,7 +1,16 @@
+#############################################################
+#############################################################
+############This code is deprecated, do not use##############
+#############################################################
+#############################################################
+
+
 library(ggplot2)  
+library(dplyr)  
 
 #setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
 setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
+#setwd("C:/CS1_R-Intro/drvr-jacc-5050")
 
 # get obe count for all tests and extract the ones that fail
 for_each_num_obes <- read.csv("for_each_num_obes.csv" , row.names=1)
@@ -21,17 +30,20 @@ vals_of_interest <- c("0.98" = 0.0,
 #metric1 = "jaccard.csv"
 #metric2 = "jaccard_11ang.csv"
 # uncomment for jaccard 11 vs 15
-metric1 = "jaccard_11ang.csv"
-metric2 = "jaccard_15ang.csv"
+#metric1 = "jaccard_11ang.csv"
+#metric2 = "jaccard_15ang.csv"
+# uncommment for jaccard different length weight
+#metric1 = "jaccard_60alph.csv"
+#metric2 = "jaccard_60alph_5050.csv"
 # uncomment for sliding window 1d vs 2d
-#metric1 = "curve_sdl_dist.csv"
-#metric2 = "sdl_2d_dist.csv"
+metric1 = "curve_sdl_dist_11ang.csv"
+metric2 = "sdl_2d_dist_44alph.csv"
 # uncomment for sliding window 1d alphabet size
 #metric1 = "curve_sdl_dist.csv"
 #metric2 = "curve_sdl_dist_11ang.csv"
 # uncomment for sliding window 2d alphabet size
 #metric1 = "sdl_2d_dist.csv"
-#metric2 = "sdl_2d_dist_11ang.csv"
+#metric2 = "sdl_2d_dist_5050.csv"
 # uncomment for sliding window 1d vs 2d 11ang
 #metric1 = "curve_sdl_dist_11ang.csv"
 #metric2 = "sdl_2d_dist_11ang.csv"
@@ -141,4 +153,8 @@ ggplot(dframe_bxplt, aes(x=Threshold, y=OBE_Ratios)) +
 	geom_line(data=pick(~Metric== metric2), aes(y=Avg_NB, group=1, color=cols[metric2]), size=2, show.legend=FALSE) +
 	scale_x_discrete(limits=rev(levels(as.factor(dframe_bxplt$Threshold)))) + 
 	scale_fill_manual(values = cols)
+
+for (i in 1:5){
+	print("Do not use, this code is deprecated!")
+}
 
