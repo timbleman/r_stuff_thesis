@@ -24,13 +24,14 @@ vals_of_interest <- c("0.98" = 0.0,
 				"0.0" = 0.0)
 # FIXME the metrics have to be in alphabetic order for the legend to be correct
 # uncomment for jaccard
-#metric1 = "jaccard_28alph.csv"
-#metric2 = "jaccard_44alph.csv"
-#metric3 = "jaccard_60alph.csv"
+metric1 = "jaccard_28alph.csv"
+metric2 = "jaccard_44alph.csv"
+metric3 = "jaccard_60alph.csv"
 # uncomment for sliding window 1d alphabet size
-metric1 = "curve_sdl_dist_7ang.csv"
-metric2 = "curve_sdl_dist_11ang.csv"
-metric3 = "curve_sdl_dist_15ang.csv"
+#metric2 = "curve_sdl_dist_11ang.csv"
+#metric3 = "curve_sdl_dist_15ang.csv"
+#metric1 = "curve_sdl_dist_7ang.csv"
+
 # uncomment for sliding window 2d alphabet size
 #metric1 = "sdl_2d_dist_28alph.csv"
 #metric2 = "sdl_2d_dist_44alph.csv"
@@ -165,7 +166,7 @@ if (NUMBER_OF_METRICS == 3){
 	dframe_lnplt$Avg_NB_3 = nb_vec3
 	
 	# set colors for the plot
-	cols <- c("#FF7777", "cadetblue3", "#33BB00")
+	cols <- c("#F8766D", "#7AC5CD", "#00BA38")
 	names(cols) <- c(metric1, metric2, metric3)
 }
 
@@ -182,11 +183,11 @@ bx_plots <- ggplot(dframe_bxplt, aes(x=Threshold, y=OBE_Ratios)) +
 	theme(axis.text.x=element_blank(), axis.title.x=element_blank())  # remove x axis for upper plot
 
 base_stp_line <- ggplot(dframe_bxplt, aes(x=Threshold, y=OBE_Ratios)) +
-			geom_line(data=pick(~Metric== metric1), aes(y=Avg_NB, group=1, color=cols[metric1]), size=2, show.legend=FALSE) + 
+			geom_line(data=pick(~Metric== metric1), aes(y=Avg_NB, group=1), color=cols[metric1], size=2, show.legend=FALSE) + 
 			scale_x_discrete(limits=rev(levels(as.factor(dframe_bxplt$Threshold))))
 
 base_connected_line <- ln_plots <- ggplot(dframe_lnplt, aes(x=Threshold)) +
-			geom_line(aes(y=Avg_NB_1, group=1, color=cols[metric1]), size=2, show.legend=FALSE) +
+			geom_line(aes(y=Avg_NB_1, group=1), color=cols[metric1], size=2, show.legend=FALSE) +
 			scale_x_discrete(limits=rev(levels(as.factor(dframe_lnplt$Threshold)))) +
 			labs(y="Avg_Neighborhood")
 
@@ -196,12 +197,12 @@ if (STEPLINE_INSTEAD_OF_LINEPLOT){
 	}
 	if (NUMBER_OF_METRICS == 2){
 		ln_plots <- base_stp_line +
-			geom_line(data=pick(~Metric== metric2), aes(y=Avg_NB, group=1, color=cols[metric2]), size=2, show.legend=FALSE)
+			geom_line(data=pick(~Metric== metric2), aes(y=Avg_NB, group=1), color=cols[metric2], size=2, show.legend=FALSE)
 	}
 	if (NUMBER_OF_METRICS == 3){
 		ln_plots <- base_stp_line +
-			geom_line(data=pick(~Metric== metric2), aes(y=Avg_NB, group=1, color=cols[metric2]), size=2, show.legend=FALSE) +
-			geom_line(data=pick(~Metric== metric3), aes(y=Avg_NB, group=1, color=cols[metric3]), size=2, show.legend=FALSE)
+			geom_line(data=pick(~Metric== metric2), aes(y=Avg_NB, group=1), color=cols[metric2], size=2, show.legend=FALSE) +
+			geom_line(data=pick(~Metric== metric3), aes(y=Avg_NB, group=1), color=cols[metric3], size=2, show.legend=FALSE)
 	}
 } else {
 	if (NUMBER_OF_METRICS == 1){
@@ -209,12 +210,12 @@ if (STEPLINE_INSTEAD_OF_LINEPLOT){
 	}
 	if (NUMBER_OF_METRICS == 2){
 		ln_plots <- base_connected_line +
-			geom_line(aes(y=Avg_NB_2, group=1, color=cols[metric2]), size=2, show.legend=FALSE)
+			geom_line(aes(y=Avg_NB_2, group=1), color=cols[metric2], size=2, show.legend=FALSE)
 	}
 	if (NUMBER_OF_METRICS == 3){
 		ln_plots <- base_connected_line +
-			geom_line(aes(y=Avg_NB_2, group=1, color=cols[metric2]), size=2, show.legend=FALSE) +
-			geom_line(aes(y=Avg_NB_3, group=1, color=cols[metric3]), size=2, show.legend=FALSE)
+			geom_line(aes(y=Avg_NB_2, group=1), color=cols[metric2], size=2, show.legend=FALSE) +
+			geom_line(aes(y=Avg_NB_3, group=1), color=cols[metric3], size=2, show.legend=FALSE)
 	}
 }
 
