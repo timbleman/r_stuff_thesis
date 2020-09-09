@@ -7,7 +7,7 @@ setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T
 setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
 
 
-STEPLINE_INSTEAD_OF_LINEPLOT = TRUE
+STEPLINE_INSTEAD_OF_LINEPLOT = FALSE
 # from 1 to 3
 NUMBER_OF_METRICS = 3
 
@@ -17,23 +17,31 @@ tests_that_fail <- row.names(for_each_num_obes)[for_each_num_obes$num_obes == 1]
 
 # do not get filled, remaining from previous single metric plotting
 vals_of_interest <- c("0.98" = 0.0,
-				"0.95" = 0.0, 
+				"0.95" = 0.0,
 				"0.9" = 0.0,
 				"0.85" = 0.0,
 				"0.75" = 0.0,
 				"0.0" = 0.0)
+# FIXME the metrics have to be in alphabetic order for the legend to be correct
 # uncomment for jaccard
-metric1 = "jaccard_28alph.csv"
-metric2 = "jaccard_44alph.csv"
-metric3 = "jaccard_60alph.csv"
+#metric1 = "jaccard_28alph.csv"
+#metric2 = "jaccard_44alph.csv"
+#metric3 = "jaccard_60alph.csv"
 # uncomment for sliding window 1d alphabet size
-#metric1 = "curve_sdl_dist_7ang.csv"
-#metric2 = "curve_sdl_dist_11ang.csv"
-#metric3 = "curve_sdl_dist_15ang.csv"
+metric1 = "curve_sdl_dist_7ang.csv"
+metric2 = "curve_sdl_dist_11ang.csv"
+metric3 = "curve_sdl_dist_15ang.csv"
 # uncomment for sliding window 2d alphabet size
 #metric1 = "sdl_2d_dist_28alph.csv"
 #metric2 = "sdl_2d_dist_44alph.csv"
 #metric3 = "sdl_2d_dist_60alph.csv"
+# uncomment for lcs
+#metric1 = "cur_sdl_lcs_dist.csv"   
+# uncomment for lcstr 0, 1 and 5 mismatches
+#metric1 = "cur_sdl_1_lcstr_dist.csv"
+#metric2 = "cur_sdl_5_lcstr_dist.csv"
+#metric3 = "cur_sdl_lcstr_dist.csv"   # "cur_sdl_lcs_dist.csv"
+
 
 # bool to control what neighbors are taken
 GREATER_THAN = TRUE
@@ -138,7 +146,7 @@ dframe_lnplt <- data.frame(
 	Avg_NB_1 = nb_vec1
 )
 
-if (NUMBER_OF_METRICS == 2){
+if (NUMBER_OF_METRICS == 1){
 	# set colors for the plot
 	cols <- c("brown3")
 	names(cols) <- c(metric1)
@@ -157,7 +165,7 @@ if (NUMBER_OF_METRICS == 3){
 	dframe_lnplt$Avg_NB_3 = nb_vec3
 	
 	# set colors for the plot
-	cols <- c("brown3", "cadetblue3", "green")
+	cols <- c("#FF7777", "cadetblue3", "#33BB00")
 	names(cols) <- c(metric1, metric2, metric3)
 }
 
@@ -170,7 +178,7 @@ dframe_bxplt$Threshold <- as.factor(dframe_bxplt$Threshold)
 bx_plots <- ggplot(dframe_bxplt, aes(x=Threshold, y=OBE_Ratios)) +
 	scale_x_discrete(limits=rev(levels(as.factor(dframe_bxplt$Threshold)))) +
 	geom_boxplot(aes(fill=Metric)) +
-	scale_color_manual(values=cols) + 
+	scale_fill_manual(values=cols) + 
 	theme(axis.text.x=element_blank(), axis.title.x=element_blank())  # remove x axis for upper plot
 
 base_stp_line <- ggplot(dframe_bxplt, aes(x=Threshold, y=OBE_Ratios)) +
