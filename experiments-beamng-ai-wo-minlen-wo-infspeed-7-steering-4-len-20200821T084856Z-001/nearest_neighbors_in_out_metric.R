@@ -6,7 +6,7 @@ library(ggplot2)
 
 # without OBEs
 setwd("C:/CS1_R-Intro/experiments-driver-ai-no-obe-wo-minlen-wo-infspeed")
-setwd("C:/CS1_R-Intro/experiments-beamng-ai-no-obe-wo-minlen-wo-infspeed")
+#setwd("C:/CS1_R-Intro/experiments-beamng-ai-no-obe-wo-minlen-wo-infspeed")
 
 LENGTH_INSTEAD_OF_UNION_SHARED = FALSE
 
@@ -48,6 +48,7 @@ all_ratios_vec <- rep(0, len_observations)
 # metric used, for the dataframe
 metric_used <- rep(NA, len_observations)
 
+time.A	<- Sys.time()   # benchmark implementation
 
 get_shared_len <- function(arr1, arr2){
 	shared_num <- 0
@@ -85,38 +86,12 @@ fill_ratio_nb_io <- function(start_index, metric_in_name, metric_out_name){
 			sum_num_nb <- sum_num_nb + length(close_neighbors)
 
 			# extract all the closest neighbors from the outlist
-			best_selected = rep(NA, length_of_neighborhood)	
-			i_best_sel <- 1
 			all_neighbors_out <- out_similarity_matrix[test_name]	
 			all_nbs_names = row.names(all_neighbors_out)
-			#print(head(all_neighbors_out))
 			# find all closest ones
-
 			all_nbs_out_sorted <- rownames(all_neighbors_out)[order(all_neighbors_out[test_name], decreasing=TRUE)]
 			best_selected <- all_nbs_out_sorted[1:length_of_neighborhood]
-			if (FALSE){   # langsam, wech
-			for (i in 1:length_of_neighborhood){
-				current_max = -1   # TODO change
-				current_best = ""
-				# select the best test that is not yet in the list
-				for (nb_out in all_nbs_names){
-					# is this right? rowname then colname=
-					sim  = all_neighbors_out[nb_out, test_name]
-					#print(typeof(current_max)  )
-					# jo, this might backfire, only using >
-					if (sim > current_max){
-						if (!nb_out %in% best_selected){
-							current_max = sim
-							current_best = nb_out
-						}
-					}
-				}
-				# check if there has been one added, remove if working
-				if (current_best == ""){print("Jo this does not work")}
-				best_selected[i_best_sel] = current_best
-				i_best_sel <- i_best_sel + 1
-			}
-			}
+
 
 			# check how big the union is
 			shared_size <- 0
@@ -160,10 +135,14 @@ dframe_bxplt <- data.frame(
 	Threshold = t_holds_repeated,
 	Union_Ratios = all_ratios_vec,
 	Avg_NB = sampled_avg_nb
-	)
+)
 
 dframe_bxplt$Threshold <- as.factor(dframe_bxplt$Threshold) 
 ggplot(dframe_bxplt, aes(x=Threshold, y=Union_Ratios)) +
 	geom_boxplot() + 
 	geom_line(aes(y=Avg_NB, group=1), size=2) + 
 	scale_x_discrete(limits=rev(levels(as.factor(dframe_bxplt$Threshold))))
+
+
+time.B	<- Sys.time()
+difftime(time.B, time.A, unit = "secs")
