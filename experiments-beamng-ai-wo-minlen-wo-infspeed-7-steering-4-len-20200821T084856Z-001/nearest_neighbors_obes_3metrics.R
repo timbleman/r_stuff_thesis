@@ -4,7 +4,7 @@ library(egg)  # for having plots stacked
 
 
 setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
-setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
+#setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
 
 
 STEPLINE_INSTEAD_OF_LINEPLOT = FALSE
@@ -24,14 +24,13 @@ vals_of_interest <- c("0.98" = 0.0,
 				"0.0" = 0.0)
 # FIXME the metrics have to be in alphabetic order for the legend to be correct
 # uncomment for jaccard
-metric1 = "jaccard_28alph.csv"
-metric2 = "jaccard_44alph.csv"
-metric3 = "jaccard_60alph.csv"
+#metric1 = "jaccard_28alph.csv"
+#metric2 = "jaccard_44alph.csv"
+#metric3 = "jaccard_60alph.csv"
 # uncomment for sliding window 1d alphabet size
+#metric1 = "curve_sdl_dist_7ang.csv"
 #metric2 = "curve_sdl_dist_11ang.csv"
 #metric3 = "curve_sdl_dist_15ang.csv"
-#metric1 = "curve_sdl_dist_7ang.csv"
-
 # uncomment for sliding window 2d alphabet size
 #metric1 = "sdl_2d_dist_28alph.csv"
 #metric2 = "sdl_2d_dist_44alph.csv"
@@ -42,6 +41,10 @@ metric3 = "jaccard_60alph.csv"
 #metric1 = "cur_sdl_1_lcstr_dist.csv"
 #metric2 = "cur_sdl_5_lcstr_dist.csv"
 #metric3 = "cur_sdl_lcstr_dist.csv"   # "cur_sdl_lcs_dist.csv"
+# uncomment for steering speed 2d output similarity
+metric1 = "steering_speed_dist_binary.csv"
+metric2 = "steering_speed_dist_single.csv"
+
 
 
 # bool to control what neighbors are taken
