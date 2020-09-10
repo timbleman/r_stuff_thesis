@@ -1,7 +1,14 @@
 library(ggplot2)  
 
+# with OBEs
 #setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
-setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
+#setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
+
+# without OBEs
+setwd("C:/CS1_R-Intro/experiments-driver-ai-no-obe-wo-minlen-wo-infspeed")
+setwd("C:/CS1_R-Intro/experiments-beamng-ai-no-obe-wo-minlen-wo-infspeed")
+
+LENGTH_INSTEAD_OF_UNION_SHARED = FALSE
 
 # do not get filled, remaining from previous single metric plotting
 vals_of_interest <- c("0.95" = 0.0, 
@@ -12,13 +19,15 @@ vals_of_interest <- c("0.95" = 0.0,
 				"0.5" = 0.0,
 				"0.0" = 0.0)
 # uncomment for jaccard
-#metric_in = "jaccard.csv"
-#metric_in = "jaccard_11ang.csv"
-#metric_in = "jaccard_15ang.csv"
-metric_in = "sdl_2d_dist_11ang.csv"
-metric_out = "steering_speed_dist.csv"
+#metric_in = "jaccard_28alph.csv"
+#metric_in = "jaccard_44alph.csv"
+metric_in = "jaccard_60alph.csv"
+#metric_in = "sdl_2d_dist_44alph.csv"
+#metric_in = "sdl_2d_dist_60alph.csv"
+#metric_out = "steering_speed_dist.csv"
 #metric_out = "steering_dist_binary.csv"
-
+#metric_out = "steering_speed_dist_single.csv"
+metric_out = "steering_speed_dist.csv"
 
 # bool to control what neighbors are taken
 GREATER_THAN = TRUE
@@ -38,6 +47,18 @@ all_ratios_vec <- rep(0, len_observations)
 
 # metric used, for the dataframe
 metric_used <- rep(NA, len_observations)
+
+
+get_shared_len <- function(arr1, arr2){
+	shared_num <- 0
+	shared_num <- length(arr1)
+	for (el in arr2){
+		if (!el %in% arr1){
+			shared_num <- shared_num + 1
+		}
+	}
+	return(shared_num)
+}
 
 
 fill_ratio_nb_io <- function(start_index, metric_in_name, metric_out_name){
@@ -70,6 +91,10 @@ fill_ratio_nb_io <- function(start_index, metric_in_name, metric_out_name){
 			all_nbs_names = row.names(all_neighbors_out)
 			#print(head(all_neighbors_out))
 			# find all closest ones
+
+			all_nbs_out_sorted <- rownames(all_neighbors_out)[order(all_neighbors_out[test_name], decreasing=TRUE)]
+			best_selected <- all_nbs_out_sorted[1:length_of_neighborhood]
+			if (FALSE){   # langsam, wech
 			for (i in 1:length_of_neighborhood){
 				current_max = -1   # TODO change
 				current_best = ""
@@ -91,19 +116,26 @@ fill_ratio_nb_io <- function(start_index, metric_in_name, metric_out_name){
 				best_selected[i_best_sel] = current_best
 				i_best_sel <- i_best_sel + 1
 			}
+			}
 
 			# check how big the union is
-			union_size <- 0
+			shared_size <- 0
 			for (name in close_neighbors){
 				if (name %in% best_selected){
-					union_size <- union_size + 1
+					shared_size <- shared_size + 1
 				}
 			}
 
+			if (LENGTH_INSTEAD_OF_UNION_SHARED){
+				divid <- length(close_neighbors)
+			} else {
+				divid <- get_shared_len(close_neighbors, best_selected)
+			}
+
 			# TODO maybe normalize by sample size or something?
-			union_ratio <- union_size/length(close_neighbors)
+			shared_ratio <- shared_size/divid
 			# add to all ratios vector
-			all_ratios_vec[start_index] <<- union_ratio
+			all_ratios_vec[start_index] <<- shared_ratio
 
 			# fill in the threshold
 			t_holds_repeated[start_index] <<- threshold
