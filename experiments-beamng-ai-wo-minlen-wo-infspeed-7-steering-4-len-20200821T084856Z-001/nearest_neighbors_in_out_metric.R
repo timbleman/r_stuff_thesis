@@ -1,4 +1,5 @@
 library(ggplot2)  
+library(egg)
 
 # with OBEs
 #setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
@@ -8,7 +9,7 @@ library(ggplot2)
 setwd("C:/CS1_R-Intro/experiments-driver-ai-no-obe-wo-minlen-wo-infspeed")
 #setwd("C:/CS1_R-Intro/experiments-beamng-ai-no-obe-wo-minlen-wo-infspeed")
 
-LENGTH_INSTEAD_OF_UNION_SHARED = FALSE
+LENGTH_INSTEAD_OF_UNION_SHARED = TRUE
 
 # do not get filled, remaining from previous single metric plotting
 vals_of_interest <- c("0.95" = 0.0, 
@@ -28,6 +29,7 @@ metric_in = "jaccard_60alph.csv"
 #metric_out = "steering_dist_binary.csv"
 #metric_out = "steering_speed_dist_single.csv"
 metric_out = "steering_speed_dist.csv"
+#metric_out = "steering_speed_dist_single.csv"
 
 # bool to control what neighbors are taken
 GREATER_THAN = TRUE
@@ -138,10 +140,35 @@ dframe_bxplt <- data.frame(
 )
 
 dframe_bxplt$Threshold <- as.factor(dframe_bxplt$Threshold) 
-ggplot(dframe_bxplt, aes(x=Threshold, y=Union_Ratios)) +
-	geom_boxplot() + 
-	geom_line(aes(y=Avg_NB, group=1), size=2) + 
+
+bx_plots <- ggplot(dframe_bxplt, aes(x=Threshold, y=Union_Ratios)) +
+	geom_boxplot(fill="#F8766D") + 
 	scale_x_discrete(limits=rev(levels(as.factor(dframe_bxplt$Threshold))))
+
+# does also not work
+#sampled_avg_nb_non_rep <- c(unique(sampled_avg_nb), sampled_avg_nb[length(sampled_avg_nb)])
+#names(sampled_avg_nb_non_rep) <- c(names(vals_of_interest), "0.0")
+# this is absolutely horrible, but it workes for now
+sampled_avg_nb_non_rep <- unique(sampled_avg_nb)
+names(sampled_avg_nb_non_rep) <- names(vals_of_interest)
+names(sampled_avg_nb_non_rep)[length(sampled_avg_nb_non_rep)] = "0"
+dframe_lnplt <- data.frame(
+	Threshold = names(sampled_avg_nb_non_rep),
+	Avg_NB = sampled_avg_nb_non_rep
+)
+dframe_lnplt$Threshold <- as.factor(dframe_lnplt$Threshold)
+
+ln_plots <- ggplot(dframe_lnplt, aes(x=Threshold)) +
+	geom_path(aes(y=Avg_NB, group=1), color="#F8766D", size=2) +
+	scale_x_discrete(limits=rev(levels(as.factor(dframe_bxplt$Threshold))))
+
+egg::ggarrange(bx_plots, ln_plots)
+
+# old plotting
+#ggplot(dframe_bxplt, aes(x=Threshold, y=Union_Ratios)) +
+#	geom_boxplot() + 
+#	geom_line(aes(y=Avg_NB, group=1), size=2) + 
+#	scale_x_discrete(limits=rev(levels(as.factor(dframe_bxplt$Threshold))))
 
 
 time.B	<- Sys.time()
