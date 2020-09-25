@@ -6,16 +6,20 @@ setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-l
 
 
 # has to be user adjusted
-coverage_metric = "steering_bins.csv"
-#coverage_metric = "obe_2d.csv"
-min_sample_size = 1
-max_sample_size = 18
-step_size = 2
+coverage_metric <- "steering_bins.csv"
+#coverage_metric <- "speed_bins.csv"
+#coverage_metric <- "obe_2d.csv"
+coverage_metric <- "speed_steering_2d_bins.csv"
+min_sample_size <- 1
+max_sample_size <- 18
+step_size <- 2
 # number of repetitions, to average out irregularitites
-NUM_REP = 5
+NUM_REP <- 12
 # deftermines whether sparsely populated bins should be eliminated and at what percentage
-cleanup_covs = TRUE
-cov_perc_threshold = 0.02
+cleanup_covs <- TRUE
+cleanup_perc_instead_of_abs <- FALSE
+cov_perc_threshold <- 0.05
+cov_abs_threshold <- 20
 
 
 covs <- read.csv(coverage_metric, check.names=FALSE, row.names=1)
@@ -30,10 +34,14 @@ stopifnot(length(tests_that_fail) >= max_sample_size &&
 print("jo")
 # missing: cleanup
 # to cleanup all covered bins under a certain threshold
-cleanup_single_bins <- function(bins, threshold=cov_perc_threshold){
+cleanup_single_bins <- function(bins){
 	total_num <- sum(bins)
-	stopifnot(threshold < 1 && threshold >= 0)
-	thres <- total_num * threshold
+	stopifnot(cov_perc_threshold < 1 && cov_perc_threshold>= 0)
+	if (cleanup_perc_instead_of_abs){
+		thres <- total_num * cov_perc_threshold
+	} else {
+		thres <- cov_abs_threshold
+	}
 	for (j in 1:length(bins)){
 		if (bins[j] < thres){
 			bins[j] <- 0
@@ -68,10 +76,7 @@ sample_covs_and_average <- function(num_repetitions){
 		if (cleanup_covs){
 			all_tests_of_interest <- c(max_sample_obe, max_sample_non_obe)
 			for (test in all_tests_of_interest){
-				print(paste("test", test))
-				print(paste("before cl", covs[test,]))
 				covs[test,] <<- cleanup_single_bins(covs[test,])
-				print(paste("after cl", covs[test,]))
 			}
 		}
 
@@ -114,10 +119,15 @@ cols <- c("#F8766D", "#7AC5CD")
 names(cols) <- c("OBE_coverage", "non_OBE_coverage")
 
 if (cleanup_covs) {
-	desc_name <- paste("Coverages", "at", NUM_REP, "repetitions,", "removal of bins under",
-					cov_perc_threshold, "percent")
+	if (cleanup_perc_instead_of_abs){
+		desc_name <- paste(coverage_metric, "coverages", "at", NUM_REP, "repetitions,", 
+					"removal of bins under", cov_perc_threshold, "percent")
+	} else {
+		desc_name <- paste(coverage_metric, "coverages", "at", NUM_REP, "repetitions,", 
+					"removal of bins under", cov_abs_threshold, "entries")
+	}
 } else {
-	desc_name <- paste("Coverages", "at", NUM_REP, "repetitions,", "no removal")
+	desc_name <- paste(coverage_metric, "coverages", "at", NUM_REP, "repetitions,", "no removal")
 }
 ln_plots <- ggplot(dframe_obe_cov, aes(x=Sample_size)) +
 		ylim(0,1) +
