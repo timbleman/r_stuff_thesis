@@ -6,7 +6,7 @@ setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-l
 
 
 # has to be user adjusted
-coverage_metric <- "steering_bins.csv"
+#coverage_metric <- "steering_bins.csv"
 #coverage_metric <- "speed_bins.csv"
 #coverage_metric <- "obe_2d.csv"
 coverage_metric <- "speed_steering_2d_bins.csv"
@@ -14,12 +14,13 @@ min_sample_size <- 1
 max_sample_size <- 18
 step_size <- 2
 # number of repetitions, to average out irregularitites
-NUM_REP <- 12
+NUM_REP <- 8
 # deftermines whether sparsely populated bins should be eliminated and at what percentage
-cleanup_covs <- TRUE
+cleanup_covs <- FALSE
+# FALSE is better, is not impacted by short execution
 cleanup_perc_instead_of_abs <- FALSE
 cov_perc_threshold <- 0.05
-cov_abs_threshold <- 20
+cov_abs_threshold <- 10
 
 
 covs <- read.csv(coverage_metric, check.names=FALSE, row.names=1)
