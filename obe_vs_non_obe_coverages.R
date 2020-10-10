@@ -8,7 +8,7 @@ setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-l
 # has to be user adjusted
 coverage_metric <- "steering_bins.csv"
 coverage_metric <- "steering_bins_non_uniform_percentile.csv"
-#coverage_metric <- "speed_bins.csv"
+coverage_metric <- "speed_bins.csv"
 #coverage_metric <- "obe_2d.csv"
 #coverage_metric <- "speed_steering_2d_bins.csv"
 min_sample_size <- 1
@@ -16,7 +16,7 @@ max_sample_size <- 18
 step_size <- 2
 # number of repetitions, to average out irregularitites
 NUM_REP <- 3
-SEEED <- 12345
+SEEED <- 123
 
 # this has also to be adjusted below for the others
 # deftermines whether sparsely populated bins should be eliminated and at what percentage
@@ -166,8 +166,8 @@ ln_plots <- ggplot(dframe_obe_cov, aes(x=Sample_size)) +
 		geom_line(aes(y=non_OBE_cov_no_cl, group=1, color=cols["non_OBE_cov_no_cl"]), size=2, show.legend=TRUE) +
 		geom_line(aes(y=OBE_cov_perc_cl, group=1, color=cols["OBE_cov_perc_cl"]), size=2, show.legend=TRUE) +
 		geom_line(aes(y=non_OBE_cov_perc_cl, group=1, color=cols["non_OBE_cov_perc_cl"]), size=2, show.legend=TRUE) +
-		geom_line(aes(y=OBE_cov_abs_cl, group=1, color=cols["OBE_cov_abs_cl"]), size=2, show.legend=TRUE) +
-		geom_line(aes(y=non_OBE_cov_abs_cl, group=1, color=cols["non_OBE_cov_abs_cl"]), size=2, show.legend=TRUE) +
+		geom_line(aes(y=OBE_cov_abs_cl, group=1, color=cols["OBE_cov_abs_cl"]), size=2, show.legend=TRUE, alpha=0.5) +
+		geom_line(aes(y=non_OBE_cov_abs_cl, group=1, color=cols["non_OBE_cov_abs_cl"]), size=2, show.legend=TRUE, alpha=0.5) +
 		ggtitle(desc_name) +
 		scale_color_identity(name = "Coverages",
 						breaks = cols,
