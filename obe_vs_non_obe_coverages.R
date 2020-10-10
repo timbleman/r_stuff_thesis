@@ -6,15 +6,19 @@ setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-l
 
 
 # has to be user adjusted
-#coverage_metric <- "steering_bins.csv"
+coverage_metric <- "steering_bins.csv"
+coverage_metric <- "steering_bins_non_uniform_percentile.csv"
 #coverage_metric <- "speed_bins.csv"
 #coverage_metric <- "obe_2d.csv"
-coverage_metric <- "speed_steering_2d_bins.csv"
+#coverage_metric <- "speed_steering_2d_bins.csv"
 min_sample_size <- 1
 max_sample_size <- 18
 step_size <- 2
 # number of repetitions, to average out irregularitites
-NUM_REP <- 8
+NUM_REP <- 3
+SEEED <- 12345
+
+# this has also to be adjusted below for the others
 # deftermines whether sparsely populated bins should be eliminated and at what percentage
 cleanup_covs <- FALSE
 # FALSE is better, is not impacted by short execution
@@ -99,11 +103,40 @@ sample_covs_and_average <- function(num_repetitions){
 	return(L1)
 }
 
-# TODO remove
-#set.seed(1234)
-L1 <- sample_covs_and_average(num_repetitions = NUM_REP)
-obe_cov <- L1[[1]]
-non_obe_cov <- L1[[2]]
+
+# This is the important part, dont mess this up!
+# sample coverages without cleanup
+print("sample coverages without cleanup")
+set.seed(SEEED)
+L_NOCL <- sample_covs_and_average(num_repetitions = NUM_REP)
+obe_cov_no_cl <- L_NOCL[[1]]
+non_obe_cov_no_cl <- L_NOCL[[2]]
+
+# sample coverages with percentage cleanup
+print("sample coverages with percentage cleanup")
+# deftermines whether sparsely populated bins should be eliminated and at what percentage
+cleanup_covs <- TRUE
+# FALSE is better, is not impacted by short execution
+cleanup_perc_instead_of_abs <- TRUE
+cov_perc_threshold <- 0.05
+set.seed(SEEED)
+L_PERCL <- sample_covs_and_average(num_repetitions = NUM_REP)
+obe_cov_perc_cl <- L_PERCL[[1]]
+non_obe_cov_perc_cl <- L_PERCL[[2]]
+
+# sample coverages with absolute cleanup
+print("sample coverages with absolute cleanup")
+# deftermines whether sparsely populated bins should be eliminated and at what percentage
+cleanup_covs <- TRUE
+# FALSE is better, is not impacted by short execution
+cleanup_perc_instead_of_abs <- FALSE
+cov_abs_threshold <- 10
+set.seed(SEEED)
+L_ABSCL <- sample_covs_and_average(num_repetitions = NUM_REP)
+obe_cov_abs_cl <- L_ABSCL[[1]]
+non_obe_cov_abs_cl <- L_ABSCL[[2]]
+
+
 
 print("Obe ratios at various sample sizes")
 steps
@@ -112,28 +145,29 @@ non_obe_cov
 
 dframe_obe_cov <- data.frame(
 	Sample_size <- steps,
-	OBE_coverage <- obe_cov,
-	non_OBE_coverage <- non_obe_cov
+	OBE_cov_no_cl <- obe_cov_no_cl,
+	non_OBE_cov_no_cl <- non_obe_cov_no_cl,
+	OBE_cov_perc_cl <- obe_cov_perc_cl,
+	non_OBE_cov_perc_cl <- non_obe_cov_perc_cl,
+	OBE_cov_abs_cl <- obe_cov_abs_cl,
+	non_OBE_cov_abs_cl <- non_obe_cov_abs_cl
 )
 
-cols <- c("#F8766D", "#7AC5CD")
-names(cols) <- c("OBE_coverage", "non_OBE_coverage")
+cols <- c("#FF0000", "#0000FF", "#F8766D", "#7AC5CD", "#F4CCCC", "#C9DAF8")
+names(cols) <- c("OBE_cov_no_cl", "non_OBE_cov_no_cl",
+			"OBE_cov_perc_cl", "non_OBE_cov_perc_cl",
+			"OBE_cov_abs_cl", "non_OBE_cov_abs_cl")
 
-if (cleanup_covs) {
-	if (cleanup_perc_instead_of_abs){
-		desc_name <- paste(coverage_metric, "coverages", "at", NUM_REP, "repetitions,", 
-					"removal of bins under", cov_perc_threshold, "percent")
-	} else {
-		desc_name <- paste(coverage_metric, "coverages", "at", NUM_REP, "repetitions,", 
-					"removal of bins under", cov_abs_threshold, "entries")
-	}
-} else {
-	desc_name <- paste(coverage_metric, "coverages", "at", NUM_REP, "repetitions,", "no removal")
-}
+desc_name <- paste(coverage_metric, "coverages", "at", NUM_REP, "repetitions,")
+
 ln_plots <- ggplot(dframe_obe_cov, aes(x=Sample_size)) +
 		ylim(0,1) +
-		geom_line(aes(y=OBE_coverage, group=1, color=cols["OBE_coverage"]), size=2, show.legend=TRUE) +
-		geom_line(aes(y=non_OBE_coverage, group=1, color=cols["non_OBE_coverage"]), size=2, show.legend=TRUE) +
+		geom_line(aes(y=OBE_cov_no_cl, group=1, color=cols["OBE_cov_no_cl"]), size=2, show.legend=TRUE) +
+		geom_line(aes(y=non_OBE_cov_no_cl, group=1, color=cols["non_OBE_cov_no_cl"]), size=2, show.legend=TRUE) +
+		geom_line(aes(y=OBE_cov_perc_cl, group=1, color=cols["OBE_cov_perc_cl"]), size=2, show.legend=TRUE) +
+		geom_line(aes(y=non_OBE_cov_perc_cl, group=1, color=cols["non_OBE_cov_perc_cl"]), size=2, show.legend=TRUE) +
+		geom_line(aes(y=OBE_cov_abs_cl, group=1, color=cols["OBE_cov_abs_cl"]), size=2, show.legend=TRUE) +
+		geom_line(aes(y=non_OBE_cov_abs_cl, group=1, color=cols["non_OBE_cov_abs_cl"]), size=2, show.legend=TRUE) +
 		ggtitle(desc_name) +
 		scale_color_identity(name = "Coverages",
 						breaks = cols,
