@@ -1,5 +1,6 @@
 # plot the coverage development for OBE/non-OBE
 library(ggplot2)
+library(reshape2)
 
 setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
 setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
@@ -153,6 +154,25 @@ dframe_obe_cov <- data.frame(
 	non_OBE_cov_abs_cl <- non_obe_cov_abs_cl
 )
 
+# new dataframe for different plotting (point lines)
+all_sample_sizes <- c(steps, steps, steps, steps, steps, steps)
+all_cov_confs <- c(rep("OBE_cov_no_cl", length(steps)), rep("non_OBE_cov_no_cl", length(steps)),
+			rep("OBE_cov_perc_cl", length(steps)), rep("non_OBE_cov_perc_cl", length(steps)),
+			rep("OBE_cov_abs_cl", length(steps)), rep("non_OBE_cov_abs_cl", length(steps)))
+all_covs <- c(obe_cov_no_cl,
+		non_obe_cov_no_cl,
+		obe_cov_perc_cl,
+		non_obe_cov_perc_cl,
+		obe_cov_abs_cl,
+		non_obe_cov_abs_cl
+)
+dframe_obe_cov_reord <- data.frame(
+	configuration <- all_cof_confs,
+	sample_size <- all_sample_sizes,
+	covs <- all_covs
+)
+colnames(dframe_obe_cov_reord) <- c("configuration", "sample_size", "covs")
+
 cols <- c("#FF0000", "#0000FF", "#F8766D", "#7AC5CD", "#F4CCCC", "#C9DAF8")
 names(cols) <- c("OBE_cov_no_cl", "non_OBE_cov_no_cl",
 			"OBE_cov_perc_cl", "non_OBE_cov_perc_cl",
@@ -162,15 +182,20 @@ desc_name <- paste(coverage_metric, "coverages", "at", NUM_REP, "repetitions,")
 
 ln_plots <- ggplot(dframe_obe_cov, aes(x=Sample_size)) +
 		ylim(0,1) +
-		geom_line(aes(y=OBE_cov_no_cl, group=1, color=cols["OBE_cov_no_cl"]), size=2, show.legend=TRUE) +
-		geom_line(aes(y=non_OBE_cov_no_cl, group=1, color=cols["non_OBE_cov_no_cl"]), size=2, show.legend=TRUE) +
-		geom_line(aes(y=OBE_cov_perc_cl, group=1, color=cols["OBE_cov_perc_cl"]), size=2, show.legend=TRUE) +
-		geom_line(aes(y=non_OBE_cov_perc_cl, group=1, color=cols["non_OBE_cov_perc_cl"]), size=2, show.legend=TRUE) +
-		geom_line(aes(y=OBE_cov_abs_cl, group=1, color=cols["OBE_cov_abs_cl"]), size=2, show.legend=TRUE, alpha=0.5) +
-		geom_line(aes(y=non_OBE_cov_abs_cl, group=1, color=cols["non_OBE_cov_abs_cl"]), size=2, show.legend=TRUE, alpha=0.5) +
+		geom_line(aes(y=OBE_cov_no_cl, group=1, color=cols["OBE_cov_no_cl"]), size=1, show.legend=TRUE) +
+		geom_line(aes(y=non_OBE_cov_no_cl, group=1, color=cols["non_OBE_cov_no_cl"]), size=1, show.legend=TRUE) +
+		geom_line(aes(y=OBE_cov_perc_cl, group=1, color=cols["OBE_cov_perc_cl"]), size=1, show.legend=TRUE) +
+		geom_line(aes(y=non_OBE_cov_perc_cl, group=1, color=cols["non_OBE_cov_perc_cl"]), size=1, show.legend=TRUE) +
+		geom_line(aes(y=OBE_cov_abs_cl, group=1, color=cols["OBE_cov_abs_cl"]), size=1, show.legend=TRUE, alpha=0.5) +
+		geom_line(aes(y=non_OBE_cov_abs_cl, group=1, color=cols["non_OBE_cov_abs_cl"]), size=1, show.legend=TRUE, alpha=0.5) +
+		#geom_point(aes(y=OBE_cov_no_cl), size=2) + 
 		ggtitle(desc_name) +
 		scale_color_identity(name = "Coverages",
 						breaks = cols,
 						labels = names(cols),
 						guide = "legend")
+ln_plots <- ggplot(dframe_obe_cov_reord, aes(x=sample_size, y=covs, group=configuration)) +
+  		geom_line(aes(color=configuration), size=1.2)+
+  		geom_point(aes(shape=configuration, color=configuration), size=2.2)
+ln_plots <- ln_plots + scale_color_manual(values=cols)
 ln_plots
