@@ -141,8 +141,8 @@ non_obe_cov_abs_cl <- L_ABSCL[[2]]
 
 print("Obe ratios at various sample sizes")
 steps
-obe_cov
-non_obe_cov
+#obe_cov
+#non_obe_cov
 
 dframe_obe_cov <- data.frame(
 	Sample_size <- steps,
@@ -167,7 +167,7 @@ all_covs <- c(obe_cov_no_cl,
 		non_obe_cov_abs_cl
 )
 dframe_obe_cov_reord <- data.frame(
-	configuration <- all_cof_confs,
+	configuration <- all_cov_confs,
 	sample_size <- all_sample_sizes,
 	covs <- all_covs
 )
