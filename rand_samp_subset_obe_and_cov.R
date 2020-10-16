@@ -37,6 +37,7 @@ index <- 1
 
 # load the obe data from a single path
 get_obe_data <- function(subset_path){
+  setwd(subset_path)
   # extract the number of subset obes
   for_each_num_obes <- read.csv("for_each_num_obes.csv" , row.names=1)
   num_obes <- sum(for_each_num_obes)
@@ -66,6 +67,7 @@ fill_obe_data <- function(path_list, class){
 
 # load all the coverage data from a single path
 get_cov_data <- function(subset_path){
+  setwd(subset_path)
   all_whole_suite_covs <- read.csv("whole_suite_coverages.csv", row.names=1)
   vec <- all_whole_suite_covs[,]
   names(vec) <- rownames(all_whole_suite_covs)
