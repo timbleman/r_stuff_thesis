@@ -122,3 +122,6 @@ get_set_dframe <- function(set_path){
 df <- get_set_dframe(paths_lowdiv_obe[1])
 print("dataframe of dummy covs")
 df
+# melting all coverages into one, in order to be able to plot
+# for future averaging: add names for each dset
+mdata <- melt(df, id=c("steps"))
