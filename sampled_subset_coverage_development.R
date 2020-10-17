@@ -6,6 +6,8 @@ library(reshape2)
 cleanup_covs <- FALSE
 # select a dataset
 bng_or_drvr = "bng"
+# select whether to plot obes or coverages
+obes_or_covs = "obes "#"covs"
 # configure the steos at which neighborhood size sampling takes place
 min_sample_size <- 1
 max_sample_size <- 30
@@ -101,6 +103,24 @@ get_single_coverage_development <- function(set_path, cov_name, pop_ordered){
   return(vec)
 }
 
+# Get the obe development while sampling
+get_single_obe_development <- function(set_path, pop_ordered){
+  setwd(set_path)
+  for_each_num_obes <- read.csv("for_each_num_obes.csv", row.names=1)
+  tests_that_fail <- rownames(for_each_num_obes)[for_each_num_obes$num_obes == 1]
+  # sample the coverage at each step
+  num_steps <- length(steps)
+  # vector that includes coverages at each step
+  vec <- rep(0, num_steps)
+  for (i in 1:num_steps) {
+    sample_size <- steps[i]
+    ordered_subset <- pop_ordered[1:sample_size]
+    num_obes <- sum(ordered_subset %in% tests_that_fail)
+    vec[i] <- num_obes
+  }
+  return(vec)
+}
+
 # get dframe of coverages for single set
 # two formats of dataframes, add melting via reshape
 get_set_dframe <- function(set_path){
@@ -108,12 +128,16 @@ get_set_dframe <- function(set_path){
   pop_ordered <- get_order(set_path)
   # grows in a loop, not optimal
   dframe <- data.frame(steps)
-  # this is just a dummy, remove in favor of loop
-  for(cov_name in covs_of_interest){
-    print(cov_name)
-    dframe[toString(cov_name)] <- get_single_coverage_development(set_path,
+  if (obes_or_covs == "covs") {
+    # this is just a dummy, remove in favor of loop
+    for(cov_name in covs_of_interest){
+      print(cov_name)
+      dframe[toString(cov_name)] <- get_single_coverage_development(set_path,
                                                                   cov_name,
                                                                   pop_ordered)
+    }
+  } else {
+    dframe["obes"] <- get_single_obe_development(set_path, pop_ordered)
   }
   return(dframe)
 }
@@ -123,5 +147,8 @@ df <- get_set_dframe(paths_lowdiv_obe[1])
 print("dataframe of dummy covs")
 df
 # melting all coverages into one, in order to be able to plot
-# for future averaging: add names for each dset
+# for future averaging: add names representing each dset
 mdata <- melt(df, id=c("steps"))
+ln_plots <- ggplot(mdata, aes(x=steps, y=value, group=variable)) +
+  geom_line(aes(color=variable), size=1.5)
+ln_plots
