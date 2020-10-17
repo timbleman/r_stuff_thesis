@@ -3,18 +3,19 @@ library(ggplot2)
 library(reshape2)
 
 # whether bins with under 10 entries are removed
-cleanup_covs <- FALSE
+cleanup_covs <- TRUE
 # select a dataset
 bng_or_drvr = "bng"
 # select whether to plot obes or coverages
-obes_or_covs = "obes "#"covs"
+obes_or_covs = "covs" #obes "#"covs"
 # configure the steos at which neighborhood size sampling takes place
 min_sample_size <- 1
 max_sample_size <- 30
 step_size <- 2
 
 # coverages of interest
-covs_of_interest <- c("steering_bins.csv", "speed_steering_2d_bins_adjusted.csv") 
+covs_of_interest <- c("steering_bins.csv", "speed_bins.csv", 
+                      "speed_steering_2d_bins_adjusted.csv") 
 
 # add paths to the subsets
 if(bng_or_drvr == "bng"){
@@ -86,7 +87,7 @@ get_single_coverage_development <- function(set_path, cov_name, pop_ordered){
   # cleanup if needed, modify original dataframe
   if(cleanup_covs){
     for(test in pop_ordered){
-      covs[test,] <- cleanup_single_bins(covs[test,])
+      covs[test,] <- cleanup_single_bins_abs(covs[test,])
     } 
   }
   
