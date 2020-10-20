@@ -8,6 +8,8 @@ cleanup_covs <- TRUE
 bng_or_drvr = "bng"
 # select whether to plot obes or coverages
 obes_or_covs = "covs" #obes "#"covs"
+# relative to parent suite
+relative_instead_of_absolute_coverages <- FALSE
 # configure the steos at which neighborhood size sampling takes place
 min_sample_size <- 1
 max_sample_size <- 30
@@ -24,6 +26,7 @@ if(bng_or_drvr == "bng"){
                        "C:/CS1_R-Intro/dummy_adaptive_random_sampling")
   paths_lowdiv_nonobe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
   paths_hidiv_nonobe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
+  parent_suite <- "C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001"
 } else if (bng_or_drvr == "drvr"){
   # dummy stuff, remove
   paths_lowdiv_obe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
@@ -31,11 +34,26 @@ if(bng_or_drvr == "bng"){
                        "C:/CS1_R-Intro/dummy_adaptive_random_sampling")
   paths_lowdiv_nonobe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
   paths_hidiv_nonobe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
+  parent_suite <- "C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001"
 }
-
+listed_set_paths <- list("paths_lowdiv_obe" = paths_lowdiv_obe, 
+                         "paths_hidiv_obe" = paths_hidiv_obe, 
+                         "paths_lowdiv_nonobe" = paths_lowdiv_nonobe, 
+                         "paths_hidiv_nonobe" = paths_hidiv_nonobe)
 
 steps = seq(from=min_sample_size, to=max_sample_size, by=step_size)
 steps = c(steps, max_sample_size) # step may be smaller or bigger
+
+# get all absolute coverages of the parent suite
+get_parent_coverages <- function(parent_path=parent_suite){
+  prevwd <- getwd()
+  setwd(parent_path)
+  p_covs <- read.csv("whole_suite_coverages.csv", row.names=1)
+  setwd(prevwd)
+  return(p_covs)
+}
+
+parent_covs <- get_parent_coverages()
 
 # simply adds bins to get coverage
 get_coverage <- function(names_vec, cov_dframe){
@@ -101,6 +119,13 @@ get_single_coverage_development <- function(set_path, cov_name, pop_ordered){
     cov <- get_coverage(names_vec = ordered_subset, cov_dframe = covs)
     vec[i] <- cov
   }
+  if(relative_instead_of_absolute_coverages){
+    corrected_cov_name <- substr(cov_name, 0, nchar(cov_name)-4)
+    print(paste("corr cov name:", corrected_cov_name))
+    p_cov <- parent_covs[corrected_cov_name,]
+    print(paste("p_cov:", p_cov))
+    vec <- vec / p_cov
+  }
   return(vec)
 }
 
@@ -143,13 +168,79 @@ get_set_dframe <- function(set_path){
   return(dframe)
 }
 
-# this should be included in a method that runs multiple and is able to average them out
-df <- get_set_dframe(paths_lowdiv_obe[1])
-print("dataframe of dummy covs")
+# calculates hav many values there are for all subsets
+num_dframe_entries_per_set <- function(){
+  num_sets <- 0
+  for (set in listed_set_paths){
+    num_sets <- num_sets + length(set)
+  }
+  return(num_sets * length(steps))
+}
+
+# get the dataframe for multiple sets with a fixed coverage metric
+get_metric_dframe <- function(cov_name){
+  # determine length of vectors, for all the values
+  total_len <- num_dframe_entries_per_set()
+  step_len <- length(steps)
+  # there has to be a better way to get all the steps, maybe rep(names(steps), n)?
+  all_steps <- rep("0", total_len)
+  all_configs <- rep("", total_len)
+  all_covs <- rep(0, total_len)
+  all_names <- rep("", total_len)
+  i <- 1
+  
+  # loop over set coinfiguration paths
+  #for (set_conf in listed_set_paths){
+  for (set_conf_name in names(listed_set_paths)){
+    # get the path lists, strange implicit conversion to lists
+    set_conf <- unlist(listed_set_paths[set_conf_name], use.names=FALSE)
+    print(typeof(set_conf))
+    # simple name for subsets for each configuration
+    nme <- 1
+    # loop over subsets for each configuration
+    for (s_path in set_conf){
+      pop_ordered <- get_order(s_path)
+      cov <- get_single_coverage_development(s_path, cov_name, pop_ordered)
+
+      # add data to lists
+      # list of indices
+      seq_is <- i: (i + step_len - 1)
+      # fill vectors
+      all_steps[seq_is] <- steps
+      all_configs[seq_is] <- set_conf_name
+      all_names[seq_is] <- toString(nme)
+      nme <- nme + 1
+      all_covs[seq_is] <- cov
+      
+      # increment by the index of seq_is + 1
+      i <- seq_is[length(seq_is)] + 1
+    }
+  }
+  
+  # create a dataframe of vectors
+  df <- data.frame(all_steps, all_configs, all_names, all_covs)
+  #print(df)
+  return(df)
+}
+
+dummy_plot_one_set <- function(){
+    # this should be included in a method that runs multiple and is able to average them out
+    df <- get_set_dframe(paths_lowdiv_obe[1])
+    print("dataframe of dummy covs")
+    df
+    # melting all coverages into one, in order to be able to plot
+    # for future averaging: add names representing each dset
+    mdata <- melt(df, id=c("steps"))
+    ln_plots <- ggplot(mdata, aes(x=steps, y=value, group=variable)) +
+      geom_line(aes(color=variable), size=1.5)
+    ln_plots
+}
+#dummy_plot_one_set()
+
+df <- get_metric_dframe("steering_bins.csv")
 df
-# melting all coverages into one, in order to be able to plot
-# for future averaging: add names representing each dset
-mdata <- melt(df, id=c("steps"))
-ln_plots <- ggplot(mdata, aes(x=steps, y=value, group=variable)) +
-  geom_line(aes(color=variable), size=1.5)
+df1 <- df[order(df$all_steps), ,drop=FALSE]
+df1
+ln_plots <- ggplot(df1, aes(x=all_steps, y=all_covs, group=all_configs)) +
+  geom_line(aes(color=all_configs), size=1.5, stat="summary", fun="mean")
 ln_plots
