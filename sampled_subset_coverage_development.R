@@ -22,10 +22,10 @@ covs_of_interest <- c("steering_bins.csv", "speed_bins.csv",
 # add paths to the subsets
 if(bng_or_drvr == "bng"){
   paths_lowdiv_obe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
-  paths_hidiv_obe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling",
-                       "C:/CS1_R-Intro/dummy_adaptive_random_sampling")
-  paths_lowdiv_nonobe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
-  paths_hidiv_nonobe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
+  paths_hidiv_obe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
+  paths_lowdiv_nonobe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling",
+                           "C:/CS1_R-Intro/dummy_adaptive_random_sampling_2")
+  paths_hidiv_nonobe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling_2")
   parent_suite <- "C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001"
 } else if (bng_or_drvr == "drvr"){
   # dummy stuff, remove
@@ -183,7 +183,7 @@ get_metric_dframe <- function(cov_name){
   total_len <- num_dframe_entries_per_set()
   step_len <- length(steps)
   # there has to be a better way to get all the steps, maybe rep(names(steps), n)?
-  all_steps <- rep("0", total_len)
+  all_steps <- rep(0, total_len)
   all_configs <- rep("", total_len)
   all_covs <- rep(0, total_len)
   all_names <- rep("", total_len)
@@ -239,8 +239,16 @@ dummy_plot_one_set <- function(){
 
 df <- get_metric_dframe("steering_bins.csv")
 df
-df1 <- df[order(df$all_steps), ,drop=FALSE]
-df1
-ln_plots <- ggplot(df1, aes(x=all_steps, y=all_covs, group=all_configs)) +
+# melting does not help either
+#mdata <- melt(df, id=c("all_steps", "all_names", "all_covs"))
+#df1 <- df[order(df$all_steps), ,drop=FALSE]
+#df1
+# attaching and/or renaming does not reorder
+ln_plots <- ggplot(df, aes(x=all_steps, y=all_covs, group=all_configs)) +
   geom_line(aes(color=all_configs), size=1.5, stat="summary", fun="mean")
 ln_plots
+
+#br_plt <- ggplot(data=df, aes(x=all_steps, y=all_covs, fill=all_configs)) +
+#  geom_bar(stat="summary", color="black", position=position_dodge(), fun="mean")+
+#  theme_minimal()
+#br_plt
