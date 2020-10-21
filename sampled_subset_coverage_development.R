@@ -3,13 +3,13 @@ library(ggplot2)
 library(reshape2)
 
 # whether bins with under 10 entries are removed
-cleanup_covs <- TRUE
+cleanup_covs <- FALSE
 # select a dataset
 bng_or_drvr = "bng"
 # select whether to plot obes or coverages
 obes_or_covs = "covs" #obes "#"covs"
 # relative to parent suite
-relative_instead_of_absolute_coverages <- FALSE
+relative_instead_of_absolute_coverages <- TRUE
 # configure the steos at which neighborhood size sampling takes place
 min_sample_size <- 1
 max_sample_size <- 30
@@ -17,7 +17,7 @@ step_size <- 2
 
 # coverages of interest
 covs_of_interest <- c("steering_bins.csv", "speed_bins.csv", 
-                      "speed_steering_2d_bins_adjusted.csv") 
+                      "speed_steering_2d_bins_adjusted.csv", "OBE") 
 
 # add paths to the subsets
 if(bng_or_drvr == "bng"){
@@ -27,6 +27,7 @@ if(bng_or_drvr == "bng"){
                            "C:/CS1_R-Intro/dummy_adaptive_random_sampling_2")
   paths_hidiv_nonobe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling_2")
   parent_suite <- "C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001"
+  png_save_path <- "C:/CS1_R-Intro/RQ4/test"
 } else if (bng_or_drvr == "drvr"){
   # dummy stuff, remove
   paths_lowdiv_obe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
@@ -120,7 +121,12 @@ get_single_coverage_development <- function(set_path, cov_name, pop_ordered){
     vec[i] <- cov
   }
   if(relative_instead_of_absolute_coverages){
+    # strip the ".csv"
     corrected_cov_name <- substr(cov_name, 0, nchar(cov_name)-4)
+    # add cleanup to the name if this is enabled
+    if (cleanup_covs){
+      corrected_cov_name <- paste(corrected_cov_name, "cleanup", sep = "_")
+    }
     print(paste("corr cov name:", corrected_cov_name))
     p_cov <- parent_covs[corrected_cov_name,]
     print(paste("p_cov:", p_cov))
@@ -143,6 +149,15 @@ get_single_obe_development <- function(set_path, pop_ordered){
     ordered_subset <- pop_ordered[1:sample_size]
     num_obes <- sum(ordered_subset %in% tests_that_fail)
     vec[i] <- num_obes
+  }
+  # if relative is selected divide subset num obes by parent suite num obes
+  if (relative_instead_of_absolute_coverages){
+    prevwd <- getwd()
+    setwd(parent_suite)
+    for_each_num_obes <- read.csv("for_each_num_obes.csv" , row.names=1)
+    num_obes <- sum(for_each_num_obes)
+    vec <- vec / num_obes
+    setwd(prevwd)
   }
   return(vec)
 }
@@ -178,6 +193,7 @@ num_dframe_entries_per_set <- function(){
 }
 
 # get the dataframe for multiple sets with a fixed coverage metric
+# set cov name to "OBE" to get the obe development
 get_metric_dframe <- function(cov_name){
   # determine length of vectors, for all the values
   total_len <- num_dframe_entries_per_set()
@@ -194,14 +210,17 @@ get_metric_dframe <- function(cov_name){
   for (set_conf_name in names(listed_set_paths)){
     # get the path lists, strange implicit conversion to lists
     set_conf <- unlist(listed_set_paths[set_conf_name], use.names=FALSE)
-    print(typeof(set_conf))
     # simple name for subsets for each configuration
     nme <- 1
     # loop over subsets for each configuration
     for (s_path in set_conf){
       pop_ordered <- get_order(s_path)
-      cov <- get_single_coverage_development(s_path, cov_name, pop_ordered)
-
+      if (cov_name == "OBE"){
+        cov <- get_single_obe_development(s_path, pop_ordered)  
+      } else {
+        cov <- get_single_coverage_development(s_path, cov_name, pop_ordered)
+      }
+      
       # add data to lists
       # list of indices
       seq_is <- i: (i + step_len - 1)
@@ -235,20 +254,54 @@ dummy_plot_one_set <- function(){
       geom_line(aes(color=variable), size=1.5)
     ln_plots
 }
-#dummy_plot_one_set()
 
-df <- get_metric_dframe("steering_bins.csv")
-df
-# melting does not help either
-#mdata <- melt(df, id=c("all_steps", "all_names", "all_covs"))
-#df1 <- df[order(df$all_steps), ,drop=FALSE]
-#df1
-# attaching and/or renaming does not reorder
-ln_plots <- ggplot(df, aes(x=all_steps, y=all_covs, group=all_configs)) +
-  geom_line(aes(color=all_configs), size=1.5, stat="summary", fun="mean")
-ln_plots
 
-#br_plt <- ggplot(data=df, aes(x=all_steps, y=all_covs, fill=all_configs)) +
-#  geom_bar(stat="summary", color="black", position=position_dodge(), fun="mean")+
-#  theme_minimal()
-#br_plt
+# creates a filename for saving pngs
+# has to be passed the full name of a coverage, including ".csv"!
+get_cov_png_filename <- function(full_cov){
+  # save the file with appropriate filename
+  if (relative_instead_of_absolute_coverages){
+    rel <- "relative"
+  } else {
+    rel <- "absolute"
+  }
+  
+  if (full_cov == "OBE"){
+    file_name <-  paste(rel, "_obe_for_each_sampling_configs", 
+                        "_", bng_or_drvr, ".png", sep="")
+  } else {
+    cov_name <- substr(full_cov, 1, nchar(full_cov)-4)
+    if (cleanup_covs){
+      cln <- "w_cleanup"
+    } else {
+      cln <- "wo_cleanup"
+    }
+    file_name <- paste(cov_name, "_", rel, "_coverage_for_each_sampling_configs", 
+                       cln, "_", bng_or_drvr, ".png", sep="")
+  }
+  return(file_name)
+}
+
+# calculate the coverages of multiple sets for each coverage metric and save the plots
+plot_and_save_singlecov_multiset <- function(){
+  # for all coverages
+  for (cov in covs_of_interest){
+    cov_name <- substr(cov, 1, nchar(cov)-4)
+    print(paste("Creating plot for",  cov_name))
+    # create the plot
+    df <- get_metric_dframe(cov)
+    ln_plots <- ggplot(df, aes(x=all_steps, y=all_covs, group=all_configs)) +
+      geom_line(aes(color=all_configs), size=1.5, stat="summary", fun="mean")
+    ln_plots
+    
+    file_name = get_cov_png_filename(cov)
+    print(file_name)
+    prevwd <- getwd()
+    setwd(png_save_path)
+    ggsave(filename=file_name)
+    setwd(prevwd)
+  }
+}
+
+
+plot_and_save_singlecov_multiset()
