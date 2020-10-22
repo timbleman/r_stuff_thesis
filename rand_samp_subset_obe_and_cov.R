@@ -1,12 +1,15 @@
 # plots coverages and obes of adaptive random sampling subsets
 library(ggplot2)
 library(reshape2)
+library(xtable)
 
 bng_or_drvr = "bng"
 obes_or_covs = "covs"
 
 # relative to parent suite
 relative_instead_of_absolute_coverages <- TRUE
+# validity checks, keep off for dummy suites
+CHECKS = FALSE
 
 # coverages of interest
 covs_of_interest <- c("steering_bins.csv", "speed_bins.csv", 
@@ -21,6 +24,7 @@ if(bng_or_drvr == "bng"){
 	                     "C:/CS1_R-Intro/dummy_adaptive_random_sampling_2")
 	paths_lowdiv_nonobe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
 	paths_hidiv_nonobe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling_2")
+	random_suite <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling_2")
 	parent_suite <- "C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001"
 } else if (bng_or_drvr == "drvr"){
   # dummy stuff, remove
@@ -29,12 +33,14 @@ if(bng_or_drvr == "bng"){
                        "C:/CS1_R-Intro/dummy_adaptive_random_sampling")
   paths_lowdiv_nonobe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
   paths_hidiv_nonobe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
+  random_suite <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling_2")
   parent_suite <- "C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001"
 }
-listed_set_paths <- list("paths_lowdiv_obe" = paths_lowdiv_obe, 
-                         "paths_hidiv_obe" = paths_hidiv_obe, 
+listed_set_paths <- list("paths_hidiv_obe" = paths_hidiv_obe, 
+                         "paths_hidiv_nonobe" = paths_hidiv_nonobe,
+                         "paths_lowdiv_obe" = paths_lowdiv_obe, 
                          "paths_lowdiv_nonobe" = paths_lowdiv_nonobe, 
-                         "paths_hidiv_nonobe" = paths_hidiv_nonobe)
+                         "random_sampling" = random_suite)
 
 
 total_len <- sum(length(paths_lowdiv_obe ), length(paths_lowdiv_nonobe ),
@@ -106,8 +112,12 @@ get_cov_data <- function(subset_path){
     parent_all_whole_suite_covs <- read.csv("whole_suite_coverages.csv", row.names=1)
     # i do not trust that the order is always the same, therefore not using vectors for division
     for (nme in names(vec)){
-      vec[nme] <- vec[nme] / parent_all_whole_suite_covs[nme,]
-      if (vec[nme] > 1){
+      if (parent_all_whole_suite_covs[nme,] != 0){
+        vec[nme] <- vec[nme] / parent_all_whole_suite_covs[nme,]
+      } else {
+        vec[nme] <- 0
+      }
+      if (vec[nme] > 1 & CHECKS){
         print("There is a problem with the coverages in the sets. Are the right paths selected?")
       }
     }
@@ -190,7 +200,6 @@ vec_remove_file_endings <- function(names_vec, file_ending=".csv"){
     ending_start <- max(1, (nchar(nm)-ending_len+1))
     len_nm <- nchar(nm)
     pos <- ending_start:len_nm
-    print(substr(nm, ending_start, len_nm))
     if (substr(nm, ending_start, len_nm) == file_ending){
       new_vec[i] <- substring(nm, 1, ending_start-1)
     } else {
@@ -214,6 +223,67 @@ fill_cov_data_legacy <- function(path_list, class){
     stsp_cov_cl[index] <<- cov_d["steering_bins_cleanup"]
     index <<- index + 1
   }
+}
+
+# reorders dataframe, gets a classes-names-variable-values-dataframe
+# metrics columns, configurations rows
+# a lot of stupid and ugly stuff in this one but I guess it works
+reorder_dframe_for_table <- function(cnvv_dframe){
+  df1 <- data.frame()
+  
+  # create two initial columns, one for type of sampling, one for obe or nonobe, needed for latex table
+  type_of_sampling <- character(length(listed_set_paths))
+  obe_or_not <- character(length(listed_set_paths))
+  j <- 1
+  for (covi in names(listed_set_paths)){
+    # grepl is contains for strings
+    if (grepl("nonobe", covi, fixed=TRUE)){
+      # check if prev is the same, not a clean solution, but works for now
+      typeos <- substr(covi, 1, nchar(covi)-7)
+      if (type_of_sampling[j-1] == typeos){
+        type_of_sampling[j] <- ""
+      } else {
+        type_of_sampling[j] <- typeos
+      }
+      obe_or_not[j] <- "non_OBE"
+    } else if (grepl("obe", covi, fixed=TRUE)){
+      type_of_sampling[j] <- substr(covi, 1, nchar(covi)-4)
+      obe_or_not[j] <- "OBE"
+    } else {
+      type_of_sampling[j] <- covi 
+      obe_or_not[j] <- ""
+    }
+    j <- j + 1
+  }
+  df1 <- data.frame(type_of_sampling, obe_or_not)
+  # maybe stupid stuff that should be removed
+  colnames(df1) <- c("", " ")
+  
+  # create values for avg and std div for each metric and set
+  covs_of_interest <- vec_remove_file_endings(covs_of_interest)  
+  for (covi in covs_of_interest){
+    # for saving one metric all sets as str "avg (std div)"
+    vec <- character(length(listed_set_paths))
+    i <- 1
+    # subset using only one metric
+    subs_onemetr <- cnvv_dframe[cnvv_dframe$variable == covi, ]
+    for (conf_name in names(listed_set_paths)){
+      vals <- subs_onemetr$value[subs_onemetr$classes == conf_name]
+      avgi <- round(mean(vals), 3)
+      sdi <- round(sd(vals), 3)
+      table_entry <- paste(toString(avgi), " (", toString(sdi), ")", sep="")
+      vec[i] <- table_entry
+      i <- i + 1
+    }
+    if (ncol(df1) > 0){
+      df1[covi] <- vec
+    } else {
+      df1 <- data.frame(vec)
+      colnames(df1) <- covi
+    }
+  }
+  rownames(df1) <- names(listed_set_paths)
+  return(df1)
 }
 
 if (obes_or_covs == "obes"){
@@ -261,11 +331,14 @@ if (obes_or_covs == "obes"){
   #)
   
   df <- get_cov_dframe()
-  
-  mdata <- melt(dframe_cov, id=c("classes", "names"))
-  mdata <- df
-  br_plt <- ggplot(data=mdata, aes(x=variable, y=value, fill=classes)) +
+  df_table <- reorder_dframe_for_table(df)
+  #mdata <- melt(dframe_cov, id=c("classes", "names"))
+  #mdata <- df
+  br_plt <- ggplot(data=df, aes(x=variable, y=value, fill=classes)) +
     geom_bar(stat="summary", color="black", position=position_dodge(), fun="mean")+
     theme_minimal()
   br_plt
+  
+  hlines <- c(-1, 0, 2, 4, nrow(df_table))
+  print(xtable(df_table), booktabs=TRUE, include.rownames=FALSE, hline.after=hlines)
 }
