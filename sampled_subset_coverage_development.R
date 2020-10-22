@@ -90,11 +90,29 @@ cleanup_single_bins_abs <- function(bins, cov_abs_threshold=10,
 get_order <- function(set_path){
   # seems to be working as it should
   setwd(set_path)
-  all_tests <- read.csv("for_each_sampling_index.csv", row.names=1)
-  all_selected <- subset(all_tests, sampling_index != -1)
-  ordered_selected <- all_selected[order(all_selected$sampling_index),,drop=FALSE]
-  ordered_names <- rownames(ordered_selected)
+  target_file <- "for_each_sampling_index.csv"
+  if (file.exists(target_file)){
+    all_tests <- read.csv(target_file, row.names=1)
+    all_selected <- subset(all_tests, sampling_index != -1)
+    ordered_selected <- all_selected[order(all_selected$sampling_index),,drop=FALSE]
+    ordered_names <- rownames(ordered_selected)
+  } else {
+    print(paste("Warning", target_file, "has not been found in", set_path))
+    print("Now using a random order.")
+    ordered_names <- get_random_order(set_path)
+  }
+  
   return(ordered_names)
+}
+
+# if no order of sampling is defined 
+# use the names found in a dummy file and return a random order
+get_random_order <- function(set_path){
+  setwd(set_path)
+  # use for_each_num_obes.csv as dummy file
+  for_each_num_obes <- read.csv("for_each_num_obes.csv", row.names=1)
+  shuffeled_names <- sample(rownames(for_each_num_obes))
+  return(shuffeled_names)
 }
 
 # get the development of a single coverage metric for a single set
