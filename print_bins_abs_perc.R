@@ -1,23 +1,42 @@
 # print bins absolute or as percentage for a test
+# should be run in an environment, that supports window resizing (not RStudio)
+# too much of this is hardcoded and requires adjustments for small little changes
+# reimplementing using ggplot may have been much easier
 library(fields)
 
+# select a set
 setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
+setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
 
+# obe or two dimensions
 dimensions <- 2
-st_or_sp <- "sp"
+# steering (st) or speed (sp)
+st_or_sp <- "st"
+# select a test to plot bins, if not found a random one is taken
+selected_test <- "random--la711" #"one-plus-o1011" #"random"
+# Equal borders for the steering bins
+EQUAL_X_AXS <- FALSE
 if(dimensions == 2){ 
 	# these have to be adjusted by the user
-	bin_metric <- "speed_steering_2d_bins.csv"
-	bin_metric <- "speed_steering_2d_bins_adjusted.csv"
+	if (EQUAL_X_AXS){
+	  bin_metric <- "speed_steering_2d_bins.csv"
+	} else {
+	  bin_metric <- "speed_steering_2d_bins_adjusted.csv"
+	}
 }
 if(dimensions == 1){ 
 	if(st_or_sp == "st") {
-		bin_metric <- "steering_bins.csv"
+		if (EQUAL_X_AXS){
+			bin_metric <- "steering_bins.csv"
+		} else {
+			bin_metric <- "steering_bins_non_uniform_percentile.csv"
+		}
 	}
 	if(st_or_sp == "sp") {
 		bin_metric <- "speed_bins.csv"
 	}
 }
+# whether percentage will be plotted instead of absolute values
 as_percentage <- FALSE
 # These have to be correctly entered!!!
 x_dim = 16
@@ -27,15 +46,23 @@ if(dimensions == 1){
 	y_dim = 16
 }
 NUM_COL <- 64
-selected_test <- "one-plus-o1011" #"random"
-# TODO non equal distr for drvr/bngai
-EQUAL_X_AXS <- TRUE
-if(EQUAL_X_AXS){
-	predef_col_labels <- round(seq(-1, 1, 2/(x_dim-1)), digits=2)
-} else {
-	predef_col_labels <- rep(0, x_dim)
+# borders for fillin bins 
+# FIXME the usage of x_dim will be problematic for non-square bins
+# calculate labels for equal width
+predef_speed_labels <- round(seq(0, 85, 85/(x_dim)), digits=1)
+predef_steer_labels <- round(seq(-1, 1, 2/(x_dim)), digits=2)
+# percentile based borders
+adjusted_steer_labels <- c(-1.0, -0.09, -0.06, -0.05, -0.04, -0.03, -0.03, -0.02, 
+					-0.00, 0.02, 0.03, 0.03, 0.04, 0.05, 0.06, 0.08, 1.0)
+if (st_or_sp == "sp") {
+	predef_col_labels <- predef_speed_labels
+} else if (st_or_sp == "st"){
+	if(EQUAL_X_AXS){
+		predef_col_labels <- predef_steer_labels
+	} else {
+		predef_col_labels <- adjusted_steer_labels
+	}
 }
-predef_speed_labels <- round(seq(0, 85, 85/(y_dim-1)), digits=2)
 
 all_bins <- read.csv(bin_metric, check.names=FALSE, row.names=1)
 
@@ -82,29 +109,49 @@ rotate_1d <- function(x){
 }
 
 
+# font size multiplier, requires tweaking of borders
+font_mult <- 1.5
 dev.off()
 if (y_dim == 1){
-	dev.new(width=x_dim/2, height=2.3)
+	dev.new(width=x_dim/2, height=2.45)
 	rotated <- rotate_1d(image_bins)
-	#
-	rownames(rotated) <- predef_col_labels
+	par(mar=c(6,4,4,1)+.1)  # margins bottom, left, top, right
+
+	# TODO maybe use the upper, not lower border
+	rownames(rotated) <- predef_col_labels[1:length(predef_col_labels)-1]
 	#axis( 2, at=seq(0,1,length.out=ncol(rotated) ), labels= colnames(rotated), las= 2 )
 	if(st_or_sp == "st"){
-		fields::image.plot(rotated, xlab="steering bins", yaxt='n', xaxt='n', col=heat.colors(NUM_COL))
-		#axis( 2, at=seq(0,1,length.out=ncol(rotated) ), labels= colnames(rotated), las= 2 )
-		axis( 1, at=seq(0,1,length.out=nrow(rotated) ), labels= rownames(rotated), las= 2)
+		fields::image.plot(rotated, xlab="steering bins", yaxt='n', xaxt='n', 
+					 col=heat.colors(NUM_COL, rev=TRUE), cex.lab = font_mult, 
+					 legend.cex = font_mult, axis.args=list(cex.axis=font_mult),
+					 mgp=c(4.5,1,1))  # position of axis labels
+		axis( 1, at=seq(0,1,length.out=nrow(rotated) ), labels= rownames(rotated), 
+			las= 2, cex.axis = font_mult)
 	} else if(st_or_sp == "sp"){
-		fields::image.plot(rotated, xlab="speed bins", yaxt='n', xaxt='n', col=heat.colors(NUM_COL))
-		#axis( 2, at=seq(0,1,length.out=ncol(rotated) ), labels= colnames(rotated), las= 2 )
-		axis( 1, at=seq(0,1,length.out=nrow(rotated) ), labels= rownames(rotated), las= 2)
+		fields::image.plot(rotated, xlab="speed bins", yaxt='n', xaxt='n', 
+					 col=heat.colors(NUM_COL, rev=TRUE), cex.lab = font_mult, 
+					 legend.cex = font_mult, axis.args=list(cex.axis=font_mult),
+					 mgp=c(4.5,1,1)) # position of axis labels
+		axis( 1, at=seq(0,1,length.out=nrow(rotated) ), labels= rownames(rotated), 
+			las= 2, cex.axis = font_mult)
 	}
 } else {
-	dev.new(width=x_dim, height=y_dim)
+	dev.new(width=x_dim+0.5, height=y_dim)
 	rotated <- rotate(image_bins)
-	rownames(rotated) <- predef_col_labels
-	colnames(rotated) <- predef_speed_labels
-	fields::image.plot(rotated, xlab="speed bins", ylab="steering bins", axes=FALSE, col=heat.colors(NUM_COL))
-	axis( 2, at=seq(0,1,length.out=nrow(rotated) ), labels= rownames(rotated), las= 2)
-	axis( 1, at=seq(0,1,length.out=ncol(rotated) ), labels= colnames(rotated), las= 2 )
+	# TODO maybe use the upper, not lower border
+	rownames(rotated) <- predef_col_labels[1:length(predef_col_labels)-1]
+	colnames(rotated) <- predef_speed_labels[1:length(predef_speed_labels)-1]
+
+	par(mar=c(6,6,4,1)+.1)  # margins bottom, left, top, right
+	# cex increases fonts, legend.cex is not working
+	fields::image.plot(rotated, xlab="steering bins", ylab="speed bins", axes=FALSE, 
+				 col=heat.colors(NUM_COL, rev=TRUE),
+				 cex.lab = font_mult, legend.cex = font_mult, 
+				 mgp=c(4.5,1,1), # position of axis labels
+				 axis.args=list(cex.axis=font_mult))
+	axis( 1, at=seq(0,1,length.out=nrow(rotated) ), labels= rownames(rotated), 
+		las= 2, cex.axis = font_mult)
+	axis( 2, at=seq(0,1,length.out=ncol(rotated) ), labels= colnames(rotated), 
+		las= 2, cex.axis = font_mult)
 }
-title(main=paste(bin_metric))
+title(main=paste(bin_metric), cex.main=font_mult)
