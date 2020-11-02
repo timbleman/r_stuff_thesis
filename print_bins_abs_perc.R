@@ -9,9 +9,9 @@ setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T
 setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
 
 # obe or two dimensions
-dimensions <- 2
+dimensions <- 1
 # steering (st) or speed (sp)
-st_or_sp <- "st"
+st_or_sp <- "sp"
 # select a test to plot bins, if not found a random one is taken
 selected_test <- "random--la711" #"one-plus-o1011" #"random"
 # Equal borders for the steering bins
@@ -110,12 +110,12 @@ rotate_1d <- function(x){
 
 
 # font size multiplier, requires tweaking of borders
-font_mult <- 1.5
+font_mult <- 2
 dev.off()
 if (y_dim == 1){
-	dev.new(width=x_dim/2, height=2.45)
+	dev.new(width=x_dim/2, height=2.65)
 	rotated <- rotate_1d(image_bins)
-	par(mar=c(6,4,4,1)+.1)  # margins bottom, left, top, right
+	par(mar=c(7,4,4,1)+.1)  # margins bottom, left, top, right
 
 	# TODO maybe use the upper, not lower border
 	rownames(rotated) <- predef_col_labels[1:length(predef_col_labels)-1]
@@ -124,14 +124,14 @@ if (y_dim == 1){
 		fields::image.plot(rotated, xlab="steering bins", yaxt='n', xaxt='n', 
 					 col=heat.colors(NUM_COL, rev=TRUE), cex.lab = font_mult, 
 					 legend.cex = font_mult, axis.args=list(cex.axis=font_mult),
-					 mgp=c(4.5,1,1))  # position of axis labels
+					 mgp=c(5.5,1,1))  # position of axis labels
 		axis( 1, at=seq(0,1,length.out=nrow(rotated) ), labels= rownames(rotated), 
 			las= 2, cex.axis = font_mult)
 	} else if(st_or_sp == "sp"){
 		fields::image.plot(rotated, xlab="speed bins", yaxt='n', xaxt='n', 
 					 col=heat.colors(NUM_COL, rev=TRUE), cex.lab = font_mult, 
 					 legend.cex = font_mult, axis.args=list(cex.axis=font_mult),
-					 mgp=c(4.5,1,1)) # position of axis labels
+					 mgp=c(5.5,1,1)) # position of axis labels
 		axis( 1, at=seq(0,1,length.out=nrow(rotated) ), labels= rownames(rotated), 
 			las= 2, cex.axis = font_mult)
 	}
@@ -142,12 +142,12 @@ if (y_dim == 1){
 	rownames(rotated) <- predef_col_labels[1:length(predef_col_labels)-1]
 	colnames(rotated) <- predef_speed_labels[1:length(predef_speed_labels)-1]
 
-	par(mar=c(6,6,4,1)+.1)  # margins bottom, left, top, right
+	par(mar=c(7,7,4,1)+.1)  # margins bottom, left, top, right
 	# cex increases fonts, legend.cex is not working
 	fields::image.plot(rotated, xlab="steering bins", ylab="speed bins", axes=FALSE, 
 				 col=heat.colors(NUM_COL, rev=TRUE),
 				 cex.lab = font_mult, legend.cex = font_mult, 
-				 mgp=c(4.5,1,1), # position of axis labels
+				 mgp=c(5.5,1,1), # position of axis labels
 				 axis.args=list(cex.axis=font_mult))
 	axis( 1, at=seq(0,1,length.out=nrow(rotated) ), labels= rownames(rotated), 
 		las= 2, cex.axis = font_mult)

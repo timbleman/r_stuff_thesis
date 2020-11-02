@@ -1,6 +1,7 @@
 # plot the coverage development of multiple subsets
 library(ggplot2)
 library(reshape2)
+library(cowplot)
 
 # whether bins with under 10 entries are removed
 cleanup_covs <- FALSE
@@ -10,24 +11,51 @@ bng_or_drvr = "bng"
 obes_or_covs = "covs" #obes "#"covs"
 # relative to parent suite
 relative_instead_of_absolute_coverages <- TRUE
+# print without legend
+without_legend <- TRUE
 # configure the steos at which neighborhood size sampling takes place
 min_sample_size <- 1
 max_sample_size <- 30
 step_size <- 2
 
 # coverages of interest
-covs_of_interest <- c("steering_bins.csv", "speed_bins.csv", 
-                      "speed_steering_2d_bins_adjusted.csv", "OBE") 
+covs_of_interest <- c("OBE", "steering_bins.csv", "speed_bins.csv", 
+                      "speed_steering_2d_bins_adjusted.csv",
+                      "obe_2d.csv") 
 
 # add paths to the subsets
 if(bng_or_drvr == "bng"){
-  paths_lowdiv_obe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
-  paths_hidiv_obe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
-  paths_lowdiv_nonobe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling",
-                           "C:/CS1_R-Intro/dummy_adaptive_random_sampling_2")
-  paths_hidiv_nonobe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling_2")
+  paths_lowdiv_obe <- c("C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la111",
+                        "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la111",
+                        "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la617",
+                        "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la219",
+                        "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la811"
+                        )
+  paths_hidiv_obe <- c("C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la111",
+                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la111",
+                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la617",
+                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la219",
+                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la811"
+                       )
+  paths_lowdiv_nonobe <- c("C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la311",
+                           "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la222",
+                           "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la711",
+                           "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la84",
+                           "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la918"
+                           )
+  paths_hidiv_nonobe <- c("C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la311",
+                          "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la222",
+                          "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la711",
+                          "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la84",
+                          "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la918"
+                          )
+  random_sampling <- c("C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-ml-wo-is-rand0",
+                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-ml-wo-is-rand1",
+                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-ml-wo-is-rand2",
+                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed--random3",
+                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed--random4")
   parent_suite <- "C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001"
-  png_save_path <- "C:/CS1_R-Intro/RQ4/test"
+  png_save_path <- "C:/CS1_R-Intro/RQ4/bng_5_subsets"
 } else if (bng_or_drvr == "drvr"){
   # dummy stuff, remove
   paths_lowdiv_obe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
@@ -35,12 +63,14 @@ if(bng_or_drvr == "bng"){
                        "C:/CS1_R-Intro/dummy_adaptive_random_sampling")
   paths_lowdiv_nonobe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
   paths_hidiv_nonobe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
+  random_sampling <- c()
   parent_suite <- "C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001"
 }
 listed_set_paths <- list("paths_lowdiv_obe" = paths_lowdiv_obe, 
                          "paths_hidiv_obe" = paths_hidiv_obe, 
                          "paths_lowdiv_nonobe" = paths_lowdiv_nonobe, 
-                         "paths_hidiv_nonobe" = paths_hidiv_nonobe)
+                         "paths_hidiv_nonobe" = paths_hidiv_nonobe,
+                         "random_sampling" = random_sampling)
 
 steps = seq(from=min_sample_size, to=max_sample_size, by=step_size)
 steps = c(steps, max_sample_size) # step may be smaller or bigger
@@ -302,23 +332,44 @@ get_cov_png_filename <- function(full_cov){
 
 # calculate the coverages of multiple sets for each coverage metric and save the plots
 plot_and_save_singlecov_multiset <- function(){
+  draw_legend = TRUE
   # for all coverages
   for (cov in covs_of_interest){
     cov_name <- substr(cov, 1, nchar(cov)-4)
     print(paste("Creating plot for",  cov_name))
     # create the plot
     df <- get_metric_dframe(cov)
-    ln_plots <- ggplot(df, aes(x=all_steps, y=all_covs, group=all_configs)) +
-      geom_line(aes(color=all_configs), size=1.5, stat="summary", fun="mean")
-    ln_plots
-    
+    theme_set(theme_classic(base_size=36))
+    if (!without_legend){
+      ln_plots <- ggplot(df, aes(x=all_steps, y=all_covs, group=all_configs)) +
+        geom_line(aes(color=all_configs), size=1.5, stat="summary", fun="mean")
+      ln_plots
+    } else {
+      ln_plots <- ggplot(df, aes(x=all_steps, y=all_covs, group=all_configs)) +
+        geom_line(aes(color=all_configs), size=1.5, stat="summary", fun="mean")
+      # draw extra legend
+      if (draw_legend){
+        library(cowplot)
+        leg <- cowplot::get_legend(ln_plots)
+        leg
+        save_img(png_save_path, "legend.png")
+        draw_legend <- FALSE
+      }
+      ln_plots <- ln_plots +
+        theme(legend.position = "none")
+      ln_plots
+    }
     file_name = get_cov_png_filename(cov)
     print(file_name)
-    prevwd <- getwd()
-    setwd(png_save_path)
-    ggsave(filename=file_name)
-    setwd(prevwd)
+    save_img(png_save_path, file_name)
   }
+}
+
+save_img <- function(ipath, file_name){
+  prevwd <- getwd()
+  setwd(ipath)
+  ggsave(filename=file_name)
+  setwd(prevwd)
 }
 
 

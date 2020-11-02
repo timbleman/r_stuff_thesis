@@ -7,16 +7,24 @@ setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-l
 
 
 # has to be user adjusted
-coverage_metric <- "steering_bins.csv"
-coverage_metric <- "steering_bins_non_uniform_percentile.csv"
+plt_legend <- FALSE
+#coverage_metric <- "steering_bins.csv"
+#coverage_metric <- "steering_bins_non_uniform_percentile.csv"
 coverage_metric <- "speed_bins.csv"
+#coverage_metric <- "speed_steering_2d_bins.csv"
+#coverage_metric <- "speed_steering_2d_bins_adjusted.csv"
 #coverage_metric <- "obe_2d.csv"
 #coverage_metric <- "speed_steering_2d_bins.csv"
+covs_of_interest <- c("steering_bins.csv",
+                      "steering_bins_non_uniform_percentile.csv",
+                      "speed_bins.csv",
+                      "speed_steering_2d_bins.csv",
+                      "speed_steering_2d_bins_adjusted.csv")
 min_sample_size <- 1
-max_sample_size <- 18
+max_sample_size <- 30
 step_size <- 2
 # number of repetitions, to average out irregularitites
-NUM_REP <- 3
+NUM_REP <- 8
 SEEED <- 123
 
 # this has also to be adjusted below for the others
@@ -27,17 +35,11 @@ cleanup_perc_instead_of_abs <- FALSE
 cov_perc_threshold <- 0.05
 cov_abs_threshold <- 10
 
-
-covs <- read.csv(coverage_metric, check.names=FALSE, row.names=1)
-
 for_each_num_obes <- read.csv("for_each_num_obes.csv" , row.names=1)
 tests_that_fail <- row.names(for_each_num_obes)[for_each_num_obes$num_obes == 1]
 tests_that_do_not_fail <- row.names(for_each_num_obes)[for_each_num_obes$num_obes == 0]
+covs <- NA
 
-stopifnot(length(tests_that_fail) >= max_sample_size &&
-		length(tests_that_do_not_fail) >= max_sample_size )
-
-print("jo")
 # missing: cleanup
 # to cleanup all covered bins under a certain threshold
 cleanup_single_bins <- function(bins){
@@ -105,73 +107,126 @@ sample_covs_and_average <- function(num_repetitions){
 }
 
 
-# This is the important part, dont mess this up!
-# sample coverages without cleanup
-print("sample coverages without cleanup")
-set.seed(SEEED)
-L_NOCL <- sample_covs_and_average(num_repetitions = NUM_REP)
-obe_cov_no_cl <- L_NOCL[[1]]
-non_obe_cov_no_cl <- L_NOCL[[2]]
+get_dframe_dev <- function(coverage_metric){
+  covs <<- read.csv(coverage_metric, check.names=FALSE, row.names=1)
+  
+  stopifnot(length(tests_that_fail) >= max_sample_size &&
+              length(tests_that_do_not_fail) >= max_sample_size )
+  
+  # This is the important part, dont mess this up!
+  # sample coverages without cleanup
+  print("sample coverages without cleanup")
+  cleanup_covs <<- FALSE
+  # FALSE is better, is not impacted by short execution
+  cleanup_perc_instead_of_abs <<- FALSE
+  cov_perc_threshold <<- 0.05
+  cov_abs_threshold <<- 10
+  set.seed(SEEED)
+  L_NOCL <- sample_covs_and_average(num_repetitions = NUM_REP)
+  obe_cov_no_cl <- L_NOCL[[1]]
+  non_obe_cov_no_cl <- L_NOCL[[2]]
+  
+  # sample coverages with percentage cleanup
+  print("sample coverages with percentage cleanup")
+  # deftermines whether sparsely populated bins should be eliminated and at what percentage
+  cleanup_covs <<- TRUE
+  # FALSE is better, is not impacted by short execution
+  cleanup_perc_instead_of_abs <<- TRUE
+  cov_perc_threshold <<- 0.05
+  set.seed(SEEED)
+  L_PERCL <- sample_covs_and_average(num_repetitions = NUM_REP)
+  obe_cov_perc_cl <- L_PERCL[[1]]
+  non_obe_cov_perc_cl <- L_PERCL[[2]]
+  
+  # sample coverages with absolute cleanup
+  print("sample coverages with absolute cleanup")
+  # deftermines whether sparsely populated bins should be eliminated and at what percentage
+  cleanup_covs <<- TRUE
+  # FALSE is better, is not impacted by short execution
+  cleanup_perc_instead_of_abs <<- FALSE
+  cov_abs_threshold <<- 10
+  set.seed(SEEED)
+  L_ABSCL <- sample_covs_and_average(num_repetitions = NUM_REP)
+  obe_cov_abs_cl <- L_ABSCL[[1]]
+  non_obe_cov_abs_cl <- L_ABSCL[[2]]
+  
+  
+  
+  #print("Obe ratios at various sample sizes")
+  #steps
+  #obe_cov
+  #non_obe_cov
+  
+  #dframe_obe_cov <- data.frame(
+  #	Sample_size <- steps,
+  #	OBE_cov_no_cl <- obe_cov_no_cl,
+  #	non_OBE_cov_no_cl <- non_obe_cov_no_cl,
+  #	OBE_cov_perc_cl <- obe_cov_perc_cl,
+  #	non_OBE_cov_perc_cl <- non_obe_cov_perc_cl,
+  #	OBE_cov_abs_cl <- obe_cov_abs_cl,
+  #	non_OBE_cov_abs_cl <- non_obe_cov_abs_cl
+  #)
+  
+  # new dataframe for different plotting (point lines)
+  all_sample_sizes <- c(steps, steps, steps, steps, steps, steps)
+  all_cov_confs <- c(rep("OBE_cov_no_cl", length(steps)), rep("non_OBE_cov_no_cl", length(steps)),
+                     rep("OBE_cov_perc_cl", length(steps)), rep("non_OBE_cov_perc_cl", length(steps)),
+                     rep("OBE_cov_abs_cl", length(steps)), rep("non_OBE_cov_abs_cl", length(steps)))
+  all_covs <- c(obe_cov_no_cl,
+                non_obe_cov_no_cl,
+                obe_cov_perc_cl,
+                non_obe_cov_perc_cl,
+                obe_cov_abs_cl,
+                non_obe_cov_abs_cl
+  )
+  dframe_obe_cov_reord <- data.frame(
+    configuration <- all_cov_confs,
+    sample_size <- all_sample_sizes,
+    covs <- all_covs
+  )
+  colnames(dframe_obe_cov_reord) <- c("configuration", "sample_size", "covs")
+  
+  return(dframe_obe_cov_reord)
+}
 
-# sample coverages with percentage cleanup
-print("sample coverages with percentage cleanup")
-# deftermines whether sparsely populated bins should be eliminated and at what percentage
-cleanup_covs <- TRUE
-# FALSE is better, is not impacted by short execution
-cleanup_perc_instead_of_abs <- TRUE
-cov_perc_threshold <- 0.05
-set.seed(SEEED)
-L_PERCL <- sample_covs_and_average(num_repetitions = NUM_REP)
-obe_cov_perc_cl <- L_PERCL[[1]]
-non_obe_cov_perc_cl <- L_PERCL[[2]]
 
-# sample coverages with absolute cleanup
-print("sample coverages with absolute cleanup")
-# deftermines whether sparsely populated bins should be eliminated and at what percentage
-cleanup_covs <- TRUE
-# FALSE is better, is not impacted by short execution
-cleanup_perc_instead_of_abs <- FALSE
-cov_abs_threshold <- 10
-set.seed(SEEED)
-L_ABSCL <- sample_covs_and_average(num_repetitions = NUM_REP)
-obe_cov_abs_cl <- L_ABSCL[[1]]
-non_obe_cov_abs_cl <- L_ABSCL[[2]]
+save_multicov_dev <- function(covs_of_interest, png_save_path){
+  for (cov_metr in covs_of_interest){
+    dframe_obe_cov_reord <- get_dframe_dev(coverage_metric = cov_metr)
+    if (grepl(".csv", cov_metr, fixed=TRUE)){
+      metr_name <- substr(cov_metr, 1, nchar(cov_metr)-4)
+    } else {
+      metr_name <- cov_metr
+    }
+    file_name <- paste(metr_name, "_coverages_at_", NUM_REP, "_repetitions", 
+                       ".png", sep="")
+    
+    #theme_set(theme_classic(base_size=36))
+    ln_plots <- ggplot(dframe_obe_cov_reord, aes(x=sample_size, y=covs, group=configuration)) +
+      geom_line(aes(color=configuration), size=1.2)+
+      geom_point(aes(shape=configuration, color=configuration), size=2.2)
+    ln_plots <- ln_plots + scale_color_manual(values=cols)  + 
+      ylim(0, 1) +
+      theme(text = element_text(size=36))
+    if (plt_legend == FALSE){
+      ln_plots <- ln_plots +
+        theme(legend.position = "none")
+    }
+    ln_plots
+    save_img(png_save_path, file_name)
+    
+  }
+}
 
+save_img <- function(ipath, file_name){
+  prevwd <- getwd()
+  setwd(ipath)
+  ggsave(filename=file_name)
+  setwd(prevwd)
+}
 
+dframe_obe_cov_reord <- get_dframe_dev(coverage_metric = coverage_metric)
 
-print("Obe ratios at various sample sizes")
-steps
-#obe_cov
-#non_obe_cov
-
-dframe_obe_cov <- data.frame(
-	Sample_size <- steps,
-	OBE_cov_no_cl <- obe_cov_no_cl,
-	non_OBE_cov_no_cl <- non_obe_cov_no_cl,
-	OBE_cov_perc_cl <- obe_cov_perc_cl,
-	non_OBE_cov_perc_cl <- non_obe_cov_perc_cl,
-	OBE_cov_abs_cl <- obe_cov_abs_cl,
-	non_OBE_cov_abs_cl <- non_obe_cov_abs_cl
-)
-
-# new dataframe for different plotting (point lines)
-all_sample_sizes <- c(steps, steps, steps, steps, steps, steps)
-all_cov_confs <- c(rep("OBE_cov_no_cl", length(steps)), rep("non_OBE_cov_no_cl", length(steps)),
-			rep("OBE_cov_perc_cl", length(steps)), rep("non_OBE_cov_perc_cl", length(steps)),
-			rep("OBE_cov_abs_cl", length(steps)), rep("non_OBE_cov_abs_cl", length(steps)))
-all_covs <- c(obe_cov_no_cl,
-		non_obe_cov_no_cl,
-		obe_cov_perc_cl,
-		non_obe_cov_perc_cl,
-		obe_cov_abs_cl,
-		non_obe_cov_abs_cl
-)
-dframe_obe_cov_reord <- data.frame(
-	configuration <- all_cov_confs,
-	sample_size <- all_sample_sizes,
-	covs <- all_covs
-)
-colnames(dframe_obe_cov_reord) <- c("configuration", "sample_size", "covs")
 
 cols <- c("#FF0000", "#0000FF", "#F8766D", "#7AC5CD", "#F4CCCC", "#C9DAF8")
 names(cols) <- c("OBE_cov_no_cl", "non_OBE_cov_no_cl",
@@ -180,22 +235,29 @@ names(cols) <- c("OBE_cov_no_cl", "non_OBE_cov_no_cl",
 
 desc_name <- paste(coverage_metric, "coverages", "at", NUM_REP, "repetitions,")
 
-ln_plots <- ggplot(dframe_obe_cov, aes(x=Sample_size)) +
-		ylim(0,1) +
-		geom_line(aes(y=OBE_cov_no_cl, group=1, color=cols["OBE_cov_no_cl"]), size=1, show.legend=TRUE) +
-		geom_line(aes(y=non_OBE_cov_no_cl, group=1, color=cols["non_OBE_cov_no_cl"]), size=1, show.legend=TRUE) +
-		geom_line(aes(y=OBE_cov_perc_cl, group=1, color=cols["OBE_cov_perc_cl"]), size=1, show.legend=TRUE) +
-		geom_line(aes(y=non_OBE_cov_perc_cl, group=1, color=cols["non_OBE_cov_perc_cl"]), size=1, show.legend=TRUE) +
-		geom_line(aes(y=OBE_cov_abs_cl, group=1, color=cols["OBE_cov_abs_cl"]), size=1, show.legend=TRUE, alpha=0.5) +
-		geom_line(aes(y=non_OBE_cov_abs_cl, group=1, color=cols["non_OBE_cov_abs_cl"]), size=1, show.legend=TRUE, alpha=0.5) +
-		#geom_point(aes(y=OBE_cov_no_cl), size=2) + 
-		ggtitle(desc_name) +
-		scale_color_identity(name = "Coverages",
-						breaks = cols,
-						labels = names(cols),
-						guide = "legend")
-ln_plots <- ggplot(dframe_obe_cov_reord, aes(x=sample_size, y=covs, group=configuration)) +
-  		geom_line(aes(color=configuration), size=1.2)+
-  		geom_point(aes(shape=configuration, color=configuration), size=2.2)
-ln_plots <- ln_plots + scale_color_manual(values=cols)
-ln_plots
+theme_set(theme_classic(base_size=36))
+
+#ln_plots <- ggplot(dframe_obe_cov, aes(x=Sample_size)) +
+#		ylim(0,1) +
+#		geom_line(aes(y=OBE_cov_no_cl, group=1, color=cols["OBE_cov_no_cl"]), size=1, show.legend=TRUE) +
+#		geom_line(aes(y=non_OBE_cov_no_cl, group=1, color=cols["non_OBE_cov_no_cl"]), size=1, show.legend=TRUE) +
+#		geom_line(aes(y=OBE_cov_perc_cl, group=1, color=cols["OBE_cov_perc_cl"]), size=1, show.legend=TRUE) +
+#		geom_line(aes(y=non_OBE_cov_perc_cl, group=1, color=cols["non_OBE_cov_perc_cl"]), size=1, show.legend=TRUE) +
+#		geom_line(aes(y=OBE_cov_abs_cl, group=1, color=cols["OBE_cov_abs_cl"]), size=1, show.legend=TRUE, alpha=0.5) +
+#		geom_line(aes(y=non_OBE_cov_abs_cl, group=1, color=cols["non_OBE_cov_abs_cl"]), size=1, show.legend=TRUE, alpha=0.5) +
+#		#geom_point(aes(y=OBE_cov_no_cl), size=2) + 
+#		ggtitle(desc_name) +
+#		scale_color_identity(name = "Coverages",
+#						breaks = cols,
+#						labels = names(cols),
+#						guide = "legend")
+
+
+# better plotting
+#ln_plots <- ggplot(dframe_obe_cov_reord, aes(x=sample_size, y=covs, group=configuration)) +
+#  		geom_line(aes(color=configuration), size=1.2)+
+#  		geom_point(aes(shape=configuration, color=configuration), size=2.2)
+#ln_plots <- ln_plots + scale_color_manual(values=cols)  + 
+#  theme(text = element_text(size=16))
+#ln_plots
+save_multicov_dev(covs_of_interest, "C:/CS1_R-Intro/RQ3/obe_vs_non_obe_cov_automated")

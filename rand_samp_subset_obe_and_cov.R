@@ -19,12 +19,35 @@ covs_of_interest <- c("steering_bins_cleanup.csv", "speed_bins_cleanup.csv",
 
 
 if(bng_or_drvr == "bng"){
-	paths_lowdiv_obe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
-	paths_hidiv_obe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling",
-	                     "C:/CS1_R-Intro/dummy_adaptive_random_sampling_2")
-	paths_lowdiv_nonobe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
-	paths_hidiv_nonobe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling_2")
-	random_suite <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling_2")
+  paths_lowdiv_obe <- c("C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la111",
+                        "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la111",
+                        "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la617",
+                        "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la219",
+                        "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la811"
+  )
+  paths_hidiv_obe <- c("C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la111",
+                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la111",
+                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la617",
+                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la219",
+                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la811"
+  )
+  paths_lowdiv_nonobe <- c("C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la311",
+                           "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la222",
+                           "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la711",
+                           "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la84",
+                           "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la918"
+  )
+  paths_hidiv_nonobe <- c("C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la311",
+                          "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la222",
+                          "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la711",
+                          "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la84",
+                          "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la918"
+  )
+  random_suite <- c("C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-ml-wo-is-rand0",
+                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-ml-wo-is-rand1",
+                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-ml-wo-is-rand2",
+                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed--random3",
+                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed--random4")
 	parent_suite <- "C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001"
 } else if (bng_or_drvr == "drvr"){
   # dummy stuff, remove
