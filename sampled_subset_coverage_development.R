@@ -6,7 +6,7 @@ library(cowplot)
 # whether bins with under 10 entries are removed
 cleanup_covs <- FALSE
 # select a dataset
-bng_or_drvr = "bng"
+bng_or_drvr = "drvr"
 # select whether to plot obes or coverages
 obes_or_covs = "covs" #obes "#"covs"
 # relative to parent suite
@@ -22,55 +22,94 @@ step_size <- 2
 covs_of_interest <- c("OBE", "steering_bins.csv", "speed_bins.csv", 
                       "speed_steering_2d_bins_adjusted.csv",
                       "obe_2d.csv") 
+# this is the only metric I use with cleanup in the thesis
+if (cleanup_covs){
+  covs_of_interest <- c("speed_steering_2d_bins.csv")
+}
 
 # add paths to the subsets
 if(bng_or_drvr == "bng"){
-  paths_lowdiv_obe <- c("C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la111",
-                        "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la111",
-                        "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la617",
-                        "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la219",
-                        "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la811"
+  higher_level_folder <- "C:/CS1_R-Intro/div_bng5_only_results/"
+  paths_lowdiv_obe <- c("experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la111",
+                        "experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la111",
+                        "experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la617",
+                        "experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la219",
+                        "experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la811"
                         )
-  paths_hidiv_obe <- c("C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la111",
-                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la111",
-                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la617",
-                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la219",
-                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la811"
+  paths_hidiv_obe <- c("experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la111",
+                       "experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la111",
+                       "experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la617",
+                       "experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la219",
+                       "experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la811"
                        )
-  paths_lowdiv_nonobe <- c("C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la311",
-                           "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la222",
-                           "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la711",
-                           "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la84",
-                           "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la918"
+  paths_lowdiv_nonobe <- c("experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la311",
+                           "experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la222",
+                           "experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la711",
+                           "experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la84",
+                           "experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la918"
                            )
-  paths_hidiv_nonobe <- c("C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la311",
-                          "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la222",
-                          "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la711",
-                          "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la84",
-                          "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la918"
+  paths_hidiv_nonobe <- c("experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la311",
+                          "experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la222",
+                          "experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la711",
+                          "experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la84",
+                          "experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la918"
                           )
-  random_sampling <- c("C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-ml-wo-is-rand0",
-                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-ml-wo-is-rand1",
-                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-ml-wo-is-rand2",
-                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed--random3",
-                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed--random4")
+  random_sampling <- c("experiments-beamng-ai-wo-ml-wo-is-rand0",
+                       "experiments-beamng-ai-wo-ml-wo-is-rand1",
+                       "experiments-beamng-ai-wo-ml-wo-is-rand2",
+                       "experiments-beamng-ai-wo-minlen-wo-infspeed--random3",
+                       "experiments-beamng-ai-wo-minlen-wo-infspeed--random4")
   parent_suite <- "C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001"
   png_save_path <- "C:/CS1_R-Intro/RQ4/bng_5_subsets"
 } else if (bng_or_drvr == "drvr"){
   # dummy stuff, remove
-  paths_lowdiv_obe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
-  paths_hidiv_obe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling",
-                       "C:/CS1_R-Intro/dummy_adaptive_random_sampling")
-  paths_lowdiv_nonobe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
-  paths_hidiv_nonobe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
-  random_sampling <- c()
+  higher_level_folder <- "C:/CS1_R-Intro/div_drvr5_only_results/"
+  paths_lowdiv_obe <- c("experiments-driver-ai-wo-minlen-wo-infspeed-lowdiv_random--la219",
+                        "experiments-driver-ai-wo-minlen-wo-infspeed-lowdiv_random--la318",
+                        "experiments-driver-ai-wo-minlen-wo-infspeed-lowdiv_random--la520",
+                        "experiments-driver-ai-wo-minlen-wo-infspeed-lowdiv_random--la438",
+                        "experiments-driver-ai-wo-minlen-wo-infspeed-lowdiv_random--la712"
+                        )
+  paths_hidiv_obe <- c("experiments-driver-ai-wo-minlen-wo-infspeed-highdiv_random--la219",
+                       "experiments-driver-ai-wo-minlen-wo-infspeed-highdiv_random--la318",
+                       "experiments-driver-ai-wo-minlen-wo-infspeed-highdiv_random--la520",
+                       "experiments-driver-ai-wo-minlen-wo-infspeed-highdiv_random--la438",
+                       "experiments-driver-ai-wo-minlen-wo-infspeed-highdiv_random--la712"
+                       )
+  paths_lowdiv_nonobe <- c("experiments-driver-ai-wo-minlen-wo-infspeed-lowdiv_one-plus-o212",
+                           "experiments-driver-ai-wo-minlen-wo-infspeed-lowdiv_random--la42",
+                           "experiments-driver-ai-wo-minlen-wo-infspeed-lowdiv_random--la68",
+                           "experiments-driver-ai-wo-minlen-wo-infspeed-lowdiv_random--la94",
+                           "experiments-driver-ai-wo-minlen-wo-infspeed-lowdiv_random--la1010"
+                           )
+  paths_hidiv_nonobe <- c("experiments-driver-ai-wo-minlen-wo-infspeed-highdiv_one-plus-o212",
+                          "experiments-driver-ai-wo-minlen-wo-infspeed-highdiv_random--la42",
+                          "experiments-driver-ai-wo-minlen-wo-infspeed-highdiv_random--la68",
+                          "experiments-driver-ai-wo-minlen-wo-infspeed-highdiv_random--la94",
+                          "experiments-driver-ai-wo-minlen-wo-infspeed-highdiv_random--la1010"
+                          )
+  random_sampling <- c("experiments-driver-ai-wo-minlen-wo-infspeed--random0",
+                       "experiments-driver-ai-wo-minlen-wo-infspeed--random1",
+                       "experiments-driver-ai-wo-minlen-wo-infspeed--random2",
+                       "experiments-driver-ai-wo-minlen-wo-infspeed--random3",
+                       "experiments-driver-ai-wo-minlen-wo-infspeed--random4"
+                       )
   parent_suite <- "C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001"
+  png_save_path <- "C:/CS1_R-Intro/RQ4/drvr_5_subsets"
 }
+# create list of paths for iterating
 listed_set_paths <- list("paths_lowdiv_obe" = paths_lowdiv_obe, 
                          "paths_hidiv_obe" = paths_hidiv_obe, 
                          "paths_lowdiv_nonobe" = paths_lowdiv_nonobe, 
                          "paths_hidiv_nonobe" = paths_hidiv_nonobe,
                          "random_sampling" = random_sampling)
+# add the parent path to each folder
+for (i in 1:length(listed_set_paths)){
+  for (j in 1:length(listed_set_paths[[i]])){
+    listed_set_paths[[i]][j] <- paste(higher_level_folder, 
+                                      listed_set_paths[[i]][j], sep="")
+  }
+}
 
 steps = seq(from=min_sample_size, to=max_sample_size, by=step_size)
 steps = c(steps, max_sample_size) # step may be smaller or bigger
@@ -177,7 +216,7 @@ get_single_coverage_development <- function(set_path, cov_name, pop_ordered){
     }
     print(paste("corr cov name:", corrected_cov_name))
     p_cov <- parent_covs[corrected_cov_name,]
-    print(paste("p_cov:", p_cov))
+    print(paste("parent_cov:", p_cov))
     vec <- vec / p_cov
   }
   return(vec)
@@ -324,7 +363,7 @@ get_cov_png_filename <- function(full_cov){
     } else {
       cln <- "wo_cleanup"
     }
-    file_name <- paste(cov_name, "_", rel, "_coverage_for_each_sampling_configs", 
+    file_name <- paste(cov_name, "_", rel, "_coverage_for_each_sampling_configs_", 
                        cln, "_", bng_or_drvr, ".png", sep="")
   }
   return(file_name)
