@@ -3,67 +3,112 @@ library(ggplot2)
 library(reshape2)
 library(xtable)
 
-bng_or_drvr = "bng"
+bng_or_drvr = "drvr"
 obes_or_covs = "covs"
 
 # relative to parent suite
 relative_instead_of_absolute_coverages <- TRUE
-# validity checks, keep off for dummy suites
+# condense obe and non obe startpoints
+# validity checks, keep off for dummy suites, do not work anyways lol
 CHECKS = FALSE
 
 # coverages of interest
-covs_of_interest <- c("steering_bins.csv", "speed_bins.csv", 
-                      "speed_steering_2d_bins_adjusted.csv")
-covs_of_interest <- c("steering_bins_cleanup.csv", "speed_bins_cleanup.csv", 
-                      "speed_steering_2d_bins_cleanup.csv")
+covs_of_interest <- c("steering_bins.csv", "steering_bins_cleanup.csv",
+                      "steering_bins_non_uniform_percentile.csv",
+                      "speed_bins.csv", 
+                      "speed_steering_2d_bins_cleanup.csv", 
+                      "speed_steering_2d_bins_adjusted.csv",
+                      "OBE",
+                      "obe_2d.csv")
+#covs_of_interest <- c("steering_bins_cleanup.csv", "speed_bins_cleanup.csv", 
+#                      "speed_steering_2d_bins_cleanup.csv")
 
 
 if(bng_or_drvr == "bng"){
-  paths_lowdiv_obe <- c("C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la111",
-                        "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la111",
-                        "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la617",
-                        "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la219",
-                        "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la811"
+  higher_level_folder <- "C:/CS1_R-Intro/div_bng5_only_results/"
+  paths_lowdiv_obe <- c("experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la111",
+                        "experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la111",
+                        "experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la617",
+                        "experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la219",
+                        "experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la811"
   )
-  paths_hidiv_obe <- c("C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la111",
-                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la111",
-                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la617",
-                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la219",
-                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la811"
+  paths_hidiv_obe <- c("experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la111",
+                       "experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la111",
+                       "experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la617",
+                       "experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la219",
+                       "experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la811"
   )
-  paths_lowdiv_nonobe <- c("C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la311",
-                           "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la222",
-                           "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la711",
-                           "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la84",
-                           "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la918"
+  paths_lowdiv_nonobe <- c("experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la311",
+                           "experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la222",
+                           "experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la711",
+                           "experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la84",
+                           "experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la918"
   )
-  paths_hidiv_nonobe <- c("C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la311",
-                          "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la222",
-                          "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la711",
-                          "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la84",
-                          "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la918"
+  paths_hidiv_nonobe <- c("experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la311",
+                          "experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la222",
+                          "experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la711",
+                          "experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la84",
+                          "experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la918"
   )
-  random_suite <- c("C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-ml-wo-is-rand0",
-                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-ml-wo-is-rand1",
-                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-ml-wo-is-rand2",
-                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed--random3",
-                       "C:/CS1_R-Intro/div_bng5_only_results/experiments-beamng-ai-wo-minlen-wo-infspeed--random4")
+  random_sampling <- c("experiments-beamng-ai-wo-minlen-wo-infspeed--random0",
+                       "experiments-beamng-ai-wo-minlen-wo-infspeed--random1",
+                       "experiments-beamng-ai-wo-minlen-wo-infspeed--random2",
+                       "experiments-beamng-ai-wo-minlen-wo-infspeed--random3",
+                       "experiments-beamng-ai-wo-minlen-wo-infspeed--random4")
 	parent_suite <- "C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001"
 } else if (bng_or_drvr == "drvr"){
-  # dummy stuff, remove
-  paths_lowdiv_obe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
-  paths_hidiv_obe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling",
-                       "C:/CS1_R-Intro/dummy_adaptive_random_sampling")
-  paths_lowdiv_nonobe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
-  paths_hidiv_nonobe <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling")
-  random_suite <- c("C:/CS1_R-Intro/dummy_adaptive_random_sampling_2")
+  higher_level_folder <- "C:/CS1_R-Intro/div_drvr5_only_results/"
+  paths_lowdiv_obe <- c("experiments-driver-ai-wo-minlen-wo-infspeed-lowdiv_random--la219",
+                        "experiments-driver-ai-wo-minlen-wo-infspeed-lowdiv_random--la318",
+                        "experiments-driver-ai-wo-minlen-wo-infspeed-lowdiv_random--la520",
+                        "experiments-driver-ai-wo-minlen-wo-infspeed-lowdiv_random--la438",
+                        "experiments-driver-ai-wo-minlen-wo-infspeed-lowdiv_random--la712"
+  )
+  paths_hidiv_obe <- c("experiments-driver-ai-wo-minlen-wo-infspeed-highdiv_random--la219",
+                       "experiments-driver-ai-wo-minlen-wo-infspeed-highdiv_random--la318",
+                       "experiments-driver-ai-wo-minlen-wo-infspeed-highdiv_random--la520",
+                       "experiments-driver-ai-wo-minlen-wo-infspeed-highdiv_random--la438",
+                       "experiments-driver-ai-wo-minlen-wo-infspeed-highdiv_random--la712"
+  )
+  paths_lowdiv_nonobe <- c("experiments-driver-ai-wo-minlen-wo-infspeed-lowdiv_one-plus-o212",
+                           "experiments-driver-ai-wo-minlen-wo-infspeed-lowdiv_random--la42",
+                           "experiments-driver-ai-wo-minlen-wo-infspeed-lowdiv_random--la68",
+                           "experiments-driver-ai-wo-minlen-wo-infspeed-lowdiv_random--la94",
+                           "experiments-driver-ai-wo-minlen-wo-infspeed-lowdiv_random--la1010"
+  )
+  paths_hidiv_nonobe <- c("experiments-driver-ai-wo-minlen-wo-infspeed-highdiv_one-plus-o212",
+                          "experiments-driver-ai-wo-minlen-wo-infspeed-highdiv_random--la42",
+                          "experiments-driver-ai-wo-minlen-wo-infspeed-highdiv_random--la68",
+                          "experiments-driver-ai-wo-minlen-wo-infspeed-highdiv_random--la94",
+                          "experiments-driver-ai-wo-minlen-wo-infspeed-highdiv_random--la1010"
+  )
+  random_sampling <- c("experiments-driver-ai-wo-minlen-wo-infspeed--random0",
+                       "experiments-driver-ai-wo-minlen-wo-infspeed--random1",
+                       "experiments-driver-ai-wo-minlen-wo-infspeed--random2",
+                       "experiments-driver-ai-wo-minlen-wo-infspeed--random3",
+                       "experiments-driver-ai-wo-minlen-wo-infspeed--random4"
+  )
   parent_suite <- "C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001"
 }
-listed_set_paths <- list("paths_hidiv_obe" = paths_hidiv_obe, 
-                         "paths_hidiv_nonobe" = paths_hidiv_nonobe,
-                         "paths_lowdiv_obe" = paths_lowdiv_obe, 
-                         "paths_lowdiv_nonobe" = paths_lowdiv_nonobe, 
-                         "random_sampling" = random_suite)
+ignore_obe <- TRUE
+if (ignore_obe){
+  listed_set_paths <- list("hidiv" = c(paths_hidiv_obe, paths_hidiv_nonobe),
+                            "low_div" = c(paths_lowdiv_obe, paths_lowdiv_nonobe),
+                            "random_sampling" = random_sampling)
+} else {
+  listed_set_paths <- list("hidiv_obe" = paths_hidiv_obe, 
+                           "hidiv_nonobe" = paths_hidiv_nonobe,
+                           "lowdiv_obe" = paths_lowdiv_obe, 
+                           "lowdiv_nonobe" = paths_lowdiv_nonobe, 
+                           "random_sampling" = random_sampling)
+}
+# add the parent path to each folder
+for (i in 1:length(listed_set_paths)){
+  for (j in 1:length(listed_set_paths[[i]])){
+    listed_set_paths[[i]][j] <- paste(higher_level_folder, 
+                                      listed_set_paths[[i]][j], sep="")
+  }
+}
 
 
 total_len <- sum(length(paths_lowdiv_obe ), length(paths_lowdiv_nonobe ),
@@ -83,19 +128,19 @@ index <- 1
 get_obe_data <- function(subset_path){
   setwd(subset_path)
   # extract the number of subset obes
-  for_each_num_obes <- read.csv("for_each_num_obes.csv" , row.names=1)
+  for_each_num_obes <- read.csv("for_each_num_obes.csv" , row.names=1, check.names = FALSE)
   num_obes <- sum(for_each_num_obes)
   # extract the obe coverage
-  all_whole_suite_covs <- read.csv("whole_suite_coverages.csv", row.names=1)
+  all_whole_suite_covs <- read.csv("whole_suite_coverages.csv", row.names=1, check.names = FALSE)
   obe_2d_cov <- all_whole_suite_covs["obe_2d",]
   # relative obes and coverage to parent suite
   if (relative_instead_of_absolute_coverages){
     prevwd <- getwd()
     setwd(parent_suite)
-    parent_for_each_num_obes <- read.csv("for_each_num_obes.csv" , row.names=1)
+    parent_for_each_num_obes <- read.csv("for_each_num_obes.csv" , row.names=1, check.names = FALSE)
     total_num_obes <- sum(parent_for_each_num_obes)
     num_obes <- num_obes/total_num_obes
-    parent_all_whole_suite_covs <- read.csv("whole_suite_coverages.csv", row.names=1)
+    parent_all_whole_suite_covs <- read.csv("whole_suite_coverages.csv", row.names=1, check.names = FALSE)
     total_obe_2d_cov <- parent_all_whole_suite_covs["obe_2d",]
     print(total_obe_2d_cov)
     obe_2d_cov <- obe_2d_cov / total_obe_2d_cov
@@ -125,16 +170,17 @@ fill_obe_data <- function(path_list, class){
 # load all the coverage data from a single path
 get_cov_data <- function(subset_path){
   setwd(subset_path)
-  all_whole_suite_covs <- read.csv("whole_suite_coverages.csv", row.names=1)
-  vec <- all_whole_suite_covs[,]
-  names(vec) <- rownames(all_whole_suite_covs)
+  all_whole_suite_covs <- read.csv("whole_suite_coverages.csv", row.names=1, check.names = FALSE)
+  # add one place for OBEs, a bit dirty
+  vec <- c(all_whole_suite_covs[,], 0)
+  names(vec) <- c(rownames(all_whole_suite_covs), "OBE")
   # normalize using the parent suite
   if (relative_instead_of_absolute_coverages){
     prevwd <- getwd()
     setwd(parent_suite)
-    parent_all_whole_suite_covs <- read.csv("whole_suite_coverages.csv", row.names=1)
+    parent_all_whole_suite_covs <- read.csv("whole_suite_coverages.csv", row.names=1, check.names = FALSE)
     # i do not trust that the order is always the same, therefore not using vectors for division
-    for (nme in names(vec)){
+    for (nme in rownames(all_whole_suite_covs)){
       if (parent_all_whole_suite_covs[nme,] != 0){
         vec[nme] <- vec[nme] / parent_all_whole_suite_covs[nme,]
       } else {
@@ -146,6 +192,9 @@ get_cov_data <- function(subset_path){
     }
     setwd(prevwd)
   }
+  
+  obe_stuff <- get_obe_data(subset_path)
+  vec["OBE"] <- obe_stuff["num_obes"]
   return(vec)
 }
 
@@ -164,7 +213,7 @@ fill_cov_data <- function(path_list, class){
   }
 }
 
-get_cov_dframe <- function(covs_vec=covs_of_interest){
+get_cov_dframe <- function(listed_set_paths, covs_vec=covs_of_interest, bngdrvr_col = "none"){
   # strip ".csv" if needed
   covs_of_interest <- vec_remove_file_endings(covs_of_interest)
   print(covs_of_interest)
@@ -198,7 +247,11 @@ get_cov_dframe <- function(covs_vec=covs_of_interest){
   }
   
   # create a dataframe of vectors
-  df <- data.frame(classes, names, variable, value)
+  if (bngdrvr_col == "none"){
+    df <- data.frame(classes, names, variable, value)
+  } else {
+    bngordrvr <- rep(bngdrvr_col, total_len)
+  }
   #print(df)
   return(df)
 }
@@ -248,10 +301,11 @@ fill_cov_data_legacy <- function(path_list, class){
   }
 }
 
+
 # reorders dataframe, gets a classes-names-variable-values-dataframe
 # metrics columns, configurations rows
 # a lot of stupid and ugly stuff in this one but I guess it works
-reorder_dframe_for_table <- function(cnvv_dframe){
+reorder_dframe_for_table <- function(cnvv_dframe, listed_set_paths){
   df1 <- data.frame()
   
   # create two initial columns, one for type of sampling, one for obe or nonobe, needed for latex table
@@ -353,8 +407,8 @@ if (obes_or_covs == "obes"){
   #  stsp_cov_cl
   #)
   
-  df <- get_cov_dframe()
-  df_table <- reorder_dframe_for_table(df)
+  df <- get_cov_dframe(listed_set_paths = listed_set_paths)
+  df_table <- reorder_dframe_for_table(df, listed_set_paths = listed_set_paths)
   #mdata <- melt(dframe_cov, id=c("classes", "names"))
   #mdata <- df
   br_plt <- ggplot(data=df, aes(x=variable, y=value, fill=classes)) +
@@ -362,6 +416,7 @@ if (obes_or_covs == "obes"){
     theme_minimal()
   br_plt
   
-  hlines <- c(-1, 0, 2, 4, nrow(df_table))
+  #hlines <- c(-1, 0, 2, 4, nrow(df_table))
+  hlines <- c(-1, 0, 3)
   print(xtable(df_table), booktabs=TRUE, include.rownames=FALSE, hline.after=hlines)
 }
