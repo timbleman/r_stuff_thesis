@@ -54,9 +54,9 @@ if(bng_or_drvr == "bng"){
                           "experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la84",
                           "experiments-beamng-ai-wo-minlen-wo-infspeed-highdiv_random--la918"
                           )
-  random_sampling <- c("experiments-beamng-ai-wo-ml-wo-is-rand0",
-                       "experiments-beamng-ai-wo-ml-wo-is-rand1",
-                       "experiments-beamng-ai-wo-ml-wo-is-rand2",
+  random_sampling <- c("experiments-beamng-ai-wo-minlen-wo-infspeed--random0",
+                       "experiments-beamng-ai-wo-minlen-wo-infspeed--random1",
+                       "experiments-beamng-ai-wo-minlen-wo-infspeed--random2",
                        "experiments-beamng-ai-wo-minlen-wo-infspeed--random3",
                        "experiments-beamng-ai-wo-minlen-wo-infspeed--random4")
   parent_suite <- "C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001"
