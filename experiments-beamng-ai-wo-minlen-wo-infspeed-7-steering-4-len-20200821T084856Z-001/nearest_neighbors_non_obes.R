@@ -1,4 +1,5 @@
 library(ggplot2)   # is there something like requirements?
+library(egg)
 
 setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
 #setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
@@ -14,17 +15,16 @@ BOXPLOT_INSTEAD_OF_LINEPLOT = TRUE
 
 # adjust these two
 vals_of_interest <- c("0.95" = 0.0,
-				"0.9" = 0.0,
-				"0.85" = 0.0,
+                      "0.9" = 0.0,
+        "0.85" = 0.0,
 				"0.8" = 0.0,
-				"0.7" = 0.0,
-				"0.6" = 0.0,
-				"0.4" = 0.0,
 				"0.0" = 0.0)
 #vals_of_interest <- c("0.9" = 0.0)
-name = "jaccard_60alph.csv"
+#name = "jaccard_11ang_4len.csv"
 #name = "cur_sdl_lcs_dist.csv"
-#name = "sdl_2d_dist.csv"
+#name = "sdl2d_sw_11ang_4len.csv"
+name = "cursdl_sw_11ang_4len.csv"
+#name = "curve_sdl_dist_11ang.csv"
 #name = "speering_speed_dist.csv"
 
 similarity_matrix <- read.csv(name, check.names=FALSE, row.names=1)   # , row.names=1   # messes with row extraction
@@ -99,12 +99,13 @@ for (val_str in names(vals_of_interest)){
 		all_ratios_vec[all_ratios_vec_i] <- obes_ratio
 		all_ratios_vec_i <- all_ratios_vec_i + 1
 	}
-	avg_obes_ratio_threshold <- sum_obes_ratio_threshold / length(tests_that_fail)
-	avg_num_nb <- sum_num_nb / length(tests_that_fail)
+	avg_obes_ratio_threshold <- sum_obes_ratio_threshold / length(tests_that_dont_fail)
+	avg_num_nb <- sum_num_nb / length(tests_that_dont_fail)
 	# calculate the number of unique neighbors
 	num_unique_nbs = sum(!is.na(unique_nbs))
 	print(paste("Avg OBEs ratio for", threshold, ":", avg_obes_ratio_threshold))
 	print(paste("Avg neighbors:", avg_num_nb, "Unique nbs:", num_unique_nbs))
+	cat("\n")
 	
 	#add average to thresholds array
 	vals_of_interest[val_str] <- avg_obes_ratio_threshold
@@ -115,51 +116,45 @@ for (val_str in names(vals_of_interest)){
 
 	# add all ratios for the current threshold
 	all_ratios_list[[val_str]] <- all_ratios
-	print(paste("len allratios at ", val_str, "len all_ratios", length(all_ratios)))
+	#print(paste("len allratios at ", val_str, "len all_ratios", length(all_ratios)))
 }
 
-if (!BOXPLOT_INSTEAD_OF_LINEPLOT){
-	# Lineplot
-	# Make a lineplot of 
-	t_holds <- as.numeric(names(vals_of_interest))
-	dframe_lnplt <- data.frame(
-		Threshold = t_holds,
-		OBE_Ratios = vals_of_interest,
-		Sampled_NB = sampled_neighborhood,
-		Avg_NB = sampled_avg_nb
-	)
-	ggplot(dframe_lnplt, aes(x=Threshold)) + 
-		geom_line(aes(y=OBE_Ratios, colour="Avg OBE ratio"), size=2) + 
-		geom_line(aes(y=Avg_NB, colour="Avg sampled area")) +
-		scale_color_manual("", breaks = c("Avg OBE ratio", "Avg sampled area"), 
-						values = c("red", "blue")) +
-		ggtitle("OBE ratio to jaccard similarity") 
-} else {
-	#Boxplot
-	# the dataframe must have many values, create a dataframe that can do that
-	# this might be more wise to do above
-	t_holds_repeated <- rep(0, length(all_ratios)*length(vals_of_interest))
-	for (i in 1:length(vals_of_interest)){
-		offset <- (i-1)*length(all_ratios)
-		for (j in 1:length(all_ratios)){
-			t_holds_repeated[offset+j] <- as.numeric(names(vals_of_interest)[i])
-		}
-	}
-	sampled_nb_repeated <- rep(0, length(all_ratios)*length(vals_of_interest))
-	for (i in 1:length(vals_of_interest)){
-		offset <- (i-1)*length(all_ratios)
-		for (j in 1:length(all_ratios)){
-			sampled_nb_repeated[offset+j] <- sampled_avg_nb[i]
-		}
-	}
 
-	dframe_bxplt <- data.frame(
-		Threshold = t_holds_repeated,
-		OBE_Ratios = all_ratios_vec,
-		Avg_NB = sampled_nb_repeated
-		)
-	dframe_bxplt$Threshold <- as.factor(dframe_bxplt$Threshold) 
-	ggplot(dframe_bxplt, aes(x=Threshold, y=OBE_Ratios)) +
-		geom_boxplot() + 
+#Boxplot
+# the dataframe must have many values, create a dataframe that can do that
+# this might be more wise to do above
+t_holds_repeated <- rep(0, length(all_ratios)*length(vals_of_interest))
+for (i in 1:length(vals_of_interest)){
+	offset <- (i-1)*length(all_ratios)
+	for (j in 1:length(all_ratios)){
+		t_holds_repeated[offset+j] <- as.numeric(names(vals_of_interest)[i])
+	}
+}
+sampled_nb_repeated <- rep(0, length(all_ratios)*length(vals_of_interest))
+for (i in 1:length(vals_of_interest)){
+	offset <- (i-1)*length(all_ratios)
+	for (j in 1:length(all_ratios)){
+		sampled_nb_repeated[offset+j] <- sampled_avg_nb[i]
+	}
+}
+
+	
+dframe_bxplt <- data.frame(
+	Threshold = t_holds_repeated,
+	OBE_Ratios = all_ratios_vec,
+	Avg_NB = sampled_nb_repeated
+)
+dframe_bxplt$Threshold <- as.factor(dframe_bxplt$Threshold) 
+bx_plots <- ggplot(dframe_bxplt, aes(x=Threshold, y=OBE_Ratios)) +
+	geom_boxplot(fill="#F8766D") + 
+	scale_x_discrete(limits=rev(levels(as.factor(dframe_bxplt$Threshold))))
+
+ln_plots <- ggplot(dframe_bxplt, aes(x=Threshold)) + 
+		geom_line(aes(y=Avg_NB, group=1), color="#F8766D", size=2) + 
 		scale_x_discrete(limits=rev(levels(as.factor(dframe_bxplt$Threshold))))
-}
+
+
+font_size <- 16
+ln_plots <- ln_plots + theme(text = element_text(size=font_size))
+bx_plots <- bx_plots + theme(text = element_text(size=font_size))
+egg::ggarrange(bx_plots, ln_plots)

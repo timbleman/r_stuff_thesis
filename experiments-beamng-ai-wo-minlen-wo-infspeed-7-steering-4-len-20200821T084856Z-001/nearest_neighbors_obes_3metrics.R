@@ -1,4 +1,4 @@
-library(ggplot)
+library(ggplot2)
 library(dplyr)  # for the filter function
 library(egg)  # for having plots stacked
 
@@ -16,25 +16,25 @@ for_each_num_obes <- read.csv("for_each_num_obes.csv" , row.names=1)
 tests_that_fail <- row.names(for_each_num_obes)[for_each_num_obes$num_obes == 1]
 
 # do not get filled, remaining from previous single metric plotting
-vals_of_interest <- c("0.98" = 0.0,
-				"0.95" = 0.0,
+vals_of_interest <- c("0.95" = 0.0,
 				"0.9" = 0.0,
-				"0.85" = 0.0,
-				"0.75" = 0.0,
+				"0.8" = 0.0,
+				"0.7" = 0.0,
 				"0.0" = 0.0)
 # FIXME the metrics have to be in alphabetic order for the legend to be correct
 # uncomment for jaccard
-#metric1 = "jaccard_28alph.csv"
-#metric2 = "jaccard_44alph.csv"
-#metric3 = "jaccard_60alph.csv"
+metric1 = "jaccard_7ang_4len.csv"
+metric2 = "jaccard_11ang_4len.csv"
+metric3 = "jaccard_15ang_4len.csv"
+
 # uncomment for sliding window 1d alphabet size
-#metric1 = "curve_sdl_dist_7ang.csv"
-#metric2 = "curve_sdl_dist_11ang.csv"
-#metric3 = "curve_sdl_dist_15ang.csv"
+#metric1 = "cursdl_sw_7ang.csv"
+#metric2 = "cursdl_sw_11ang.csv"
+#metric3 = "cursdl_sw_15ang.csv"
 # uncomment for sliding window 2d alphabet size
-#metric1 = "sdl_2d_dist_28alph.csv"
-#metric2 = "sdl_2d_dist_44alph.csv"
-#metric3 = "sdl_2d_dist_60alph.csv"
+#metric1 = "sdl2d_sw_7ang_4len.csv"
+#metric2 = "sdl2d_sw_11ang_4len.csv"
+#metric3 = "sdl2d_sw_15ang_4len.csv"
 # uncomment for lcs
 #metric1 = "cur_sdl_lcs_dist.csv"   
 # uncomment for lcstr 0, 1 and 5 mismatches
@@ -42,9 +42,11 @@ vals_of_interest <- c("0.98" = 0.0,
 #metric2 = "cur_sdl_5_lcstr_dist.csv"
 #metric3 = "cur_sdl_lcstr_dist.csv"   # "cur_sdl_lcs_dist.csv"
 # uncomment for steering speed 2d output similarity
-metric1 = "steering_speed_dist_binary.csv"
-metric2 = "steering_speed_dist_single.csv"
-
+#metric1 = "steering_speed_dist_binary.csv"
+#metric2 = "steering_speed_dist_single.csv"
+# uncomment for steering dist
+#metric1 = "steering_dist_binary.csv"
+#metric2 = "steering_dist_single.csv"
 
 
 # bool to control what neighbors are taken
@@ -126,12 +128,15 @@ fill_ratio_nb <- function(start_index, metric_name){
 	return(nb_vec)
 }
 
+print(metric1)
 nb_vec1 <- fill_ratio_nb(1, metric1)
 if (NUMBER_OF_METRICS >= 2){
+	print(metric2)
 	new_index <- len_observations/NUMBER_OF_METRICS + 1
 	nb_vec2 <- fill_ratio_nb(new_index, metric2)
 }
 if (NUMBER_OF_METRICS >= 3){
+	print(metric3)
 	new_index <- 2*(len_observations/NUMBER_OF_METRICS) + 1
 	nb_vec3 <- fill_ratio_nb(new_index, metric3)
 }
@@ -222,8 +227,9 @@ if (STEPLINE_INSTEAD_OF_LINEPLOT){
 	}
 }
 
-
-ln_plots
+font_size <- 14
+ln_plots <- ln_plots + theme(text = element_text(size=font_size))
+bx_plots <- bx_plots + theme(text = element_text(size=font_size))
 egg::ggarrange(bx_plots, ln_plots)
 
 # TODO add library(egg) and library(cowplot)
