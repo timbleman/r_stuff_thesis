@@ -9,7 +9,7 @@ setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-l
 
 STEPLINE_INSTEAD_OF_LINEPLOT = FALSE
 # from 1 to 3
-NUMBER_OF_METRICS = 2
+NUMBER_OF_METRICS = 3
 
 # get obe count for all tests and extract the ones that fail
 for_each_num_obes <- read.csv("for_each_num_obes.csv" , row.names=1)
@@ -19,15 +19,14 @@ tests_that_fail <- row.names(for_each_num_obes)[for_each_num_obes$num_obes == 1]
 vals_of_interest <- c(
         "0.95" = 0.0,
 				"0.9" = 0.0,
+				"0.85" = 0.0,
 				"0.8" = 0.0,
-				"0.75" = 0.0,
-				"0.7" = 0.0,
 				"0.0" = 0.0)
 # FIXME the metrics have to be in alphabetic order for the legend to be correct
 # uncomment for jaccard
 #metric1 = "jaccard_7ang_4len.csv"
-metric1 = "jaccard_15ang_8len.csv"
-metric2 = "jaccard_15ang_4len.csv"
+#metric1 = "jaccard_11ang_8len.csv"
+#metric2 = "jaccard_11ang_4len.csv"
 #metric3 = "jaccard_15ang_4len.csv"
 
 # uncomment for sliding window 1d alphabet size
@@ -36,8 +35,9 @@ metric2 = "jaccard_15ang_4len.csv"
 #metric3 = "cursdl_sw_15ang.csv"
 # uncomment for sliding window 2d alphabet size
 #metric1 = "sdl2d_sw_7ang_4len.csv"
-#metric2 = "sdl2d_sw_11ang_4len.csv"
-#metric3 = "sdl2d_sw_15ang_4len.csv"
+metric1 = "sdl2d_sw_11ang_4len.csv"
+metric2 = "sdl2d_sw_15ang_4len.csv"
+metric3 = "sdl2d_sw_15ang_8len.csv"
 # uncomment for lcs
 #metric1 = "cur_sdl_lcs_dist.csv"   
 # uncomment for lcstr 0, 1 and 5 mismatches
@@ -56,9 +56,6 @@ metric2 = "jaccard_15ang_4len.csv"
 # OBE
 wid <- 830
 hei <- 564
-# non OBE
-#wid <- 725
-#hei <- 530
 
 # bool to control what neighbors are taken
 GREATER_THAN = TRUE
