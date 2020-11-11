@@ -27,6 +27,12 @@ name = "cursdl_sw_11ang_4len.csv"
 #name = "curve_sdl_dist_11ang.csv"
 #name = "speering_speed_dist.csv"
 
+
+# define width and height of plots for a more consistent presentation
+# non OBE
+wid <- 725
+hei <- 530
+
 similarity_matrix <- read.csv(name, check.names=FALSE, row.names=1)   # , row.names=1   # messes with row extraction
 
 # write the mutual sampled neighborhood of all
@@ -154,6 +160,10 @@ ln_plots <- ggplot(dframe_bxplt, aes(x=Threshold)) +
 		scale_x_discrete(limits=rev(levels(as.factor(dframe_bxplt$Threshold))))
 
 
+# changing the output size for the plot
+# somehow this increases the resolution significantly, the ratio however is similar enough
+dev.new(width = wid, height = hei, unit="px", noRStudioGD=TRUE)
+# change to font size of the ggplots
 font_size <- 16
 ln_plots <- ln_plots + theme(text = element_text(size=font_size))
 bx_plots <- bx_plots + theme(text = element_text(size=font_size))

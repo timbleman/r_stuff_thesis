@@ -4,28 +4,31 @@ library(egg)  # for having plots stacked
 
 
 setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
-#setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
+setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
 
 
 STEPLINE_INSTEAD_OF_LINEPLOT = FALSE
 # from 1 to 3
-NUMBER_OF_METRICS = 3
+NUMBER_OF_METRICS = 2
 
 # get obe count for all tests and extract the ones that fail
 for_each_num_obes <- read.csv("for_each_num_obes.csv" , row.names=1)
 tests_that_fail <- row.names(for_each_num_obes)[for_each_num_obes$num_obes == 1]
 
 # do not get filled, remaining from previous single metric plotting
-vals_of_interest <- c("0.95" = 0.0,
+vals_of_interest <- c(
+        "0.95" = 0.0,
 				"0.9" = 0.0,
 				"0.8" = 0.0,
+				"0.75" = 0.0,
 				"0.7" = 0.0,
 				"0.0" = 0.0)
 # FIXME the metrics have to be in alphabetic order for the legend to be correct
 # uncomment for jaccard
-metric1 = "jaccard_7ang_4len.csv"
-metric2 = "jaccard_11ang_4len.csv"
-metric3 = "jaccard_15ang_4len.csv"
+#metric1 = "jaccard_7ang_4len.csv"
+metric1 = "jaccard_15ang_8len.csv"
+metric2 = "jaccard_15ang_4len.csv"
+#metric3 = "jaccard_15ang_4len.csv"
 
 # uncomment for sliding window 1d alphabet size
 #metric1 = "cursdl_sw_7ang.csv"
@@ -48,6 +51,14 @@ metric3 = "jaccard_15ang_4len.csv"
 #metric1 = "steering_dist_binary.csv"
 #metric2 = "steering_dist_single.csv"
 
+
+# define width and height of plots for a more consistent presentation
+# OBE
+wid <- 830
+hei <- 564
+# non OBE
+#wid <- 725
+#hei <- 530
 
 # bool to control what neighbors are taken
 GREATER_THAN = TRUE
@@ -227,6 +238,10 @@ if (STEPLINE_INSTEAD_OF_LINEPLOT){
 	}
 }
 
+# changing the output size for the plot
+# somehow this increases the resolution significantly, the ratio however is similar enough
+dev.new(width = wid, height = hei, unit="px", noRStudioGD=TRUE)
+# change to font size of the ggplots
 font_size <- 14
 ln_plots <- ln_plots + theme(text = element_text(size=font_size))
 bx_plots <- bx_plots + theme(text = element_text(size=font_size))
