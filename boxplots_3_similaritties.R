@@ -14,16 +14,16 @@ library(hrbrthemes)
 #metric2 = "jaccard_11ang_4len.csv"
 #metric3 = "jaccard_15ang_4len.csv"
 # uncomment for sliding window 1d alphabet size
-#metric1 = "cursdl_sw_7ang_4len.csv"
-#metric2 = "cursdl_sw_11ang_4len.csv"
-#metric3 = "cursdl_sw_15ang_4len.csv"
+metric1 = "cursdl_sw_11ang_4len.csv"
+metric2 = "cursdl_sw_15ang_4len.csv"
+metric3 = "cursdl_sw_15ang_8len.csv"
 # uncomment for sliding window 2d alphabet size
 #metric1 = "sdl_2d_28alph.csv"
 #metric2 = "sdl_2d_44alph.csv"
 #metric3 = "sdl_2d_60alph.csv"
-metric1 = "sdl2d_sw_7ang_4len.csv" 
-metric2 = "sdl2d_sw_11ang_4len.csv"
-metric3 = "sdl2d_sw_15ang_4len.csv"
+#metric1 = "sdl2d_sw_11ang_4len.csv" 
+#metric2 = "sdl2d_sw_15ang_4len.csv"
+#metric3 = "sdl2d_sw_15ang_8len.csv"
 
 #metric1 = "cur_sdl_lcs_dist_not_normalized.csv"
 #metric2 = "cur_sdl_lcstr_dist_not_normalized.csv"
@@ -55,7 +55,7 @@ metric_2_list <- get_matrix_as_list(similarity_matrix_2)
 metric_3_list <- get_matrix_as_list(similarity_matrix_3)
 
 # \n to move labels up
-names <- c(paste(metric2, "\n"), metric2, paste(metric3, "\n"))
+names <- c(paste(metric1, "\n"), metric2, paste(metric3, "\n"))
 dframe_2_bxplt <- data.frame(metric_1_list, metric_2_list, metric_3_list)
 dframe_2_bxplt.names = c(metric1, metric2, metric3)
 
