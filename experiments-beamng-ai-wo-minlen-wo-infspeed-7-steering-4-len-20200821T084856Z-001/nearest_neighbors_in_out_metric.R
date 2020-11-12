@@ -3,16 +3,17 @@ library(egg)
 
 # with OBEs
 #setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
-#setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
+setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
 
 # without OBEs
-setwd("C:/CS1_R-Intro/experiments-driver-ai-no-obe-wo-minlen-wo-infspeed")
+#setwd("C:/CS1_R-Intro/experiments-driver-ai-no-obe-wo-minlen-wo-infspeed")
 #setwd("C:/CS1_R-Intro/experiments-beamng-ai-no-obe-wo-minlen-wo-infspeed")
 
 LENGTH_INSTEAD_OF_UNION_SHARED = TRUE
 
 # do not get filled, remaining from previous single metric plotting
-vals_of_interest <- c("0.95" = 0.0, 
+vals_of_interest <- c("0.98" = 0.0,
+				"0.95" = 0.0, 
 				"0.9" = 0.0,
 				"0.85" = 0.0,
 				"0.8" = 0.0,
@@ -22,14 +23,16 @@ vals_of_interest <- c("0.95" = 0.0,
 # uncomment for jaccard
 #metric_in = "jaccard_28alph.csv"
 #metric_in = "jaccard_44alph.csv"
-metric_in = "jaccard_60alph.csv"
-#metric_in = "sdl_2d_dist_44alph.csv"
-#metric_in = "sdl_2d_dist_60alph.csv"
+#metric_in = "jaccard_60alph.csv"
+#metric_in = "sdl_2d_dist_44alph.csv"sampled_avg_nb_nonrep
+metric_in = "sdl2d_sw_11ang_4len.csv"
 #metric_out = "steering_speed_dist.csv"
 #metric_out = "steering_dist_binary.csv"
 #metric_out = "steering_speed_dist_single.csv"
-metric_out = "steering_speed_dist.csv"
-#metric_out = "steering_speed_dist_single.csv"
+#metric_out = "steering_speed_dist.csv"
+metric_out = "steering_speed_dist_single.csv"
+#metric_out = "steering_dist_single.csv"
+#metric_out = "steering_dist_binary.csv"
 
 # bool to control what neighbors are taken
 GREATER_THAN = TRUE
@@ -145,12 +148,18 @@ bx_plots <- ggplot(dframe_bxplt, aes(x=Threshold, y=Union_Ratios)) +
 	geom_boxplot(fill="#F8766D") + 
 	scale_x_discrete(limits=rev(levels(as.factor(dframe_bxplt$Threshold))))
 
-# does also not work
-#sampled_avg_nb_non_rep <- c(unique(sampled_avg_nb), sampled_avg_nb[length(sampled_avg_nb)])
-#names(sampled_avg_nb_non_rep) <- c(names(vals_of_interest), "0.0")
-# this is absolutely horrible, but it workes for now
-sampled_avg_nb_non_rep <- unique(sampled_avg_nb)
-names(sampled_avg_nb_non_rep) <- names(vals_of_interest)
+
+# extract the average neighborhood size for each step
+get_nb_values <- function(sampled_nbs, vals_of_interest){
+  stp_size <- length(sampled_nbs) / length(vals_of_interest)
+  stps <- seq(from = 1, to = length(sampled_nbs), by = stp_size)
+  nbs_at_stps <- sampled_nbs[stps]
+  names(nbs_at_stps) <- names(vals_of_interest)
+  return(nbs_at_stps)
+}
+
+sampled_avg_nb_non_rep <- get_nb_values(sampled_avg_nb, vals_of_interest)
+#names(sampled_avg_nb_non_rep) <- names(vals_of_interest)
 names(sampled_avg_nb_non_rep)[length(sampled_avg_nb_non_rep)] = "0"
 dframe_lnplt <- data.frame(
 	Threshold = names(sampled_avg_nb_non_rep),
