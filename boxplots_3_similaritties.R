@@ -70,7 +70,7 @@ names <- c(metric1, metric2, metric3)
 # strip the .csv ending in the names
 # load the corresponding function from "rand_samp_subset_obe_and_cov.R", use chdir
 # the way R handles loading functions is pretty dumb
-if (!exists(vec_remove_file_endings)){
+if (!exists("vec_remove_file_endings")){
   #vec_remove_file_endings <- function(names_vec, file_ending=".csv"){0}
   #insertSource("C:/CS1_R-Intro/rand_samp_subset_obe_and_cov.R", functions="vec_remove_file_endings")
   source("C:/CS1_R-Intro/rand_samp_subset_obe_and_cov.R")
