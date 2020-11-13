@@ -16,14 +16,14 @@ BOXPLOT_INSTEAD_OF_LINEPLOT = TRUE
 # adjust these two
 vals_of_interest <- c("0.95" = 0.0,
                       "0.9" = 0.0,
-        "0.85" = 0.0,
-				"0.8" = 0.0,
+        "0.8" = 0.0,
+				"0.7" = 0.0,
 				"0.0" = 0.0)
 #vals_of_interest <- c("0.9" = 0.0)
 #name = "jaccard_11ang_4len.csv"
 #name = "cur_sdl_lcs_dist.csv"
-#name = "sdl2d_sw_11ang_4len.csv"
-name = "cursdl_sw_11ang_4len.csv"
+name = "sdl2d_sw_11ang_4len.csv"
+#name = "cursdl_sw_11ang.csv"
 #name = "curve_sdl_dist_11ang.csv"
 #name = "speering_speed_dist.csv"
 
@@ -164,7 +164,7 @@ ln_plots <- ggplot(dframe_bxplt, aes(x=Threshold)) +
 # somehow this increases the resolution significantly, the ratio however is similar enough
 dev.new(width = wid, height = hei, unit="px", noRStudioGD=TRUE)
 # change to font size of the ggplots
-font_size <- 16
+font_size <- 26
 ln_plots <- ln_plots + theme(text = element_text(size=font_size))
 bx_plots <- bx_plots + theme(text = element_text(size=font_size))
 egg::ggarrange(bx_plots, ln_plots)

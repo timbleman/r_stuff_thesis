@@ -16,8 +16,7 @@ for_each_num_obes <- read.csv("for_each_num_obes.csv" , row.names=1)
 tests_that_fail <- row.names(for_each_num_obes)[for_each_num_obes$num_obes == 1]
 
 # do not get filled, remaining from previous single metric plotting
-vals_of_interest <- c(
-        "0.95" = 0.0,
+vals_of_interest <- c("0.95" = 0.0,
 				"0.9" = 0.0,
 				"0.85" = 0.0,
 				"0.8" = 0.0,
@@ -30,26 +29,27 @@ vals_of_interest <- c(
 #metric3 = "jaccard_15ang_4len.csv"
 
 # uncomment for sliding window 1d alphabet size
-#metric1 = "cursdl_sw_7ang.csv"
-#metric2 = "cursdl_sw_11ang.csv"
-#metric3 = "cursdl_sw_15ang.csv"
+metric1 = "cursdl_sw_7ang.csv"
+metric2 = "cursdl_sw_11ang.csv"
+metric3 = "cursdl_sw_15ang.csv"
 # uncomment for sliding window 2d alphabet size
 #metric1 = "sdl2d_sw_7ang_4len.csv"
-metric1 = "sdl2d_sw_11ang_4len.csv"
-metric2 = "sdl2d_sw_15ang_4len.csv"
-metric3 = "sdl2d_sw_15ang_8len.csv"
+#metric1 = "sdl2d_sw_11ang_4len.csv"
+#metric2 = "sdl2d_sw_15ang_4len.csv"
+#metric3 = "sdl2d_sw_15ang_8len.csv"
 # uncomment for lcs
 #metric1 = "cur_sdl_lcs_dist.csv"   
 # uncomment for lcstr 0, 1 and 5 mismatches
-#metric1 = "cur_sdl_1_lcstr_dist.csv"
-#metric2 = "cur_sdl_5_lcstr_dist.csv"
-#metric3 = "cur_sdl_lcstr_dist.csv"   # "cur_sdl_lcs_dist.csv"
+#metric1 = "cursdl_1_lcstr_7ang.csv"
+#metric2 = "cursdl_5_lcstr_7ang.csv"
+#metric3 = "cursdl_lcstr_7ang.csv"   # metric1 = "cursdl_lcs_7ang.csv"
 # uncomment for steering speed 2d output similarity
 #metric1 = "steering_speed_dist_binary.csv"
 #metric2 = "steering_speed_dist_single.csv"
 # uncomment for steering dist
 #metric1 = "steering_dist_binary.csv"
 #metric2 = "steering_dist_single.csv"
+
 
 
 # define width and height of plots for a more consistent presentation
@@ -239,9 +239,9 @@ if (STEPLINE_INSTEAD_OF_LINEPLOT){
 # somehow this increases the resolution significantly, the ratio however is similar enough
 dev.new(width = wid, height = hei, unit="px", noRStudioGD=TRUE)
 # change to font size of the ggplots
-font_size <- 14
+font_size <- 20
 ln_plots <- ln_plots + theme(text = element_text(size=font_size))
-bx_plots <- bx_plots + theme(text = element_text(size=font_size))
+bx_plots <- bx_plots + theme(text = element_text(size=font_size)) + ylim(0, 1)
 egg::ggarrange(bx_plots, ln_plots)
 
 # TODO add library(egg) and library(cowplot)

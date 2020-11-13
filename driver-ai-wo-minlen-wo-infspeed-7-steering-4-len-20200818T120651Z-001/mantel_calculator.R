@@ -2,13 +2,13 @@
 library(vegan)
 
 # path to tests
-setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
+#setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
+# without OBEs
+setwd("C:/CS1_R-Intro/experiments-driver-ai-no-obe-wo-minlen-wo-infspeed")
+setwd("C:/CS1_R-Intro/experiments-beamng-ai-no-obe-wo-minlen-wo-infspeed")
 
-input_names_to_load <- list("jaccard.csv" = NA, 
-					"jaccard_11ang.csv" = NA,
-					"jaccard_15ang.csv" = NA,
-					"sdl_2d_dist.csv" = NA,
-					"curve_sdl_dist.csv" = NA)
+input_names_to_load <- list("jaccard_11ang_4len.csv" = NA,
+					"sdl2d_sw_11ang_4len.csv" = NA)
 
 for (name in names(input_names_to_load)){	
 	c <- read.csv(name)
@@ -16,13 +16,15 @@ for (name in names(input_names_to_load)){
 	input_names_to_load[[name]] = c
 }
 
-input_names_to_load
+#input_names_to_load
 
 
-output_names_to_load <- list("speering_speed_dist.csv" = NA, 
-					"center_dist_binary.csv" = NA,
-					"steering_dist_binary.csv" = NA,
-					"steering_dist_single.csv" = NA) 
+output_names_to_load <- list("steering_speed_adj_bin.csv" = NA,
+                             "steering_speed_adj_sin.csv" = NA,
+                             "steering_speed_bin.csv" = NA,
+                             "steering_speed_sin.csv" = NA, 
+                             "steering_adj_bin.csv" = NA,
+                             "steering_adj_sin.csv" = NA) 
 
 for (name in names(output_names_to_load)){	
 	c <- read.csv(name)
@@ -30,7 +32,7 @@ for (name in names(output_names_to_load)){
 	output_names_to_load[[name]] = c
 }
 
-output_names_to_load
+#output_names_to_load
 
 # all to all mantel dists and saving in lists
 mantel_vals <- list(rep(NA, length(output_names_to_load)))

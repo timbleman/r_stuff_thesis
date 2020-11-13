@@ -1,41 +1,58 @@
 library(ggplot2)  
 library(egg)
 
-# with OBEs
+# with OBEs, do not use
 #setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
-setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
+#setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
 
 # without OBEs
-#setwd("C:/CS1_R-Intro/experiments-driver-ai-no-obe-wo-minlen-wo-infspeed")
+setwd("C:/CS1_R-Intro/experiments-driver-ai-no-obe-wo-minlen-wo-infspeed")
 #setwd("C:/CS1_R-Intro/experiments-beamng-ai-no-obe-wo-minlen-wo-infspeed")
 
 LENGTH_INSTEAD_OF_UNION_SHARED = TRUE
 
 # do not get filled, remaining from previous single metric plotting
-vals_of_interest <- c("0.98" = 0.0,
-				"0.95" = 0.0, 
+vals_of_interest <- c(
 				"0.9" = 0.0,
 				"0.85" = 0.0,
 				"0.8" = 0.0,
+				"0.75" = 0.0,
 				"0.7" = 0.0,
-				"0.5" = 0.0,
+				"0.65" = 0.0,
+				"0.6" = 0.0,
 				"0.0" = 0.0)
 # uncomment for jaccard
 #metric_in = "jaccard_28alph.csv"
 #metric_in = "jaccard_44alph.csv"
+#metric_in = "jaccard_11ang_4len.csv"
 #metric_in = "jaccard_60alph.csv"
 #metric_in = "sdl_2d_dist_44alph.csv"sampled_avg_nb_nonrep
-metric_in = "sdl2d_sw_11ang_4len.csv"
+#metric_in = "sdl2d_sw_11ang_4len.csv"
+#metric_in = "sdl2d_sw_11ang_4len.csv"
+#metric_in = "cursdl_sw_11ang.csv"
 #metric_out = "steering_speed_dist.csv"
-#metric_out = "steering_dist_binary.csv"
-#metric_out = "steering_speed_dist_single.csv"
-#metric_out = "steering_speed_dist.csv"
-metric_out = "steering_speed_dist_single.csv"
-#metric_out = "steering_dist_single.csv"
-#metric_out = "steering_dist_binary.csv"
+#metric_out = "steering_sin.csv"
+#metric_out = "steering_bin.csv"
+#metric_out = "steering_sin.csv"
+#metric_out = "steering_adj_bin.csv"
+#metric_out = "steering_adj_sin.csv"
+
+#metric_out = "speed_bin.csv"
+#metric_out = "speed_sin.csv"
+metric_in = "speed_sin.csv"
+metric_out = "steering_speed_sin.csv"
+#metric_out = "steering_speed_bin.csv"
+#metric_out = "steering_speed_adj_sin.csv"
+#metric_out = "steering_speed_adj_bin.csv"
+
 
 # bool to control what neighbors are taken
 GREATER_THAN = TRUE
+
+# define width and height of plots for a more consistent presentation
+# OBE
+wid <- 830
+hei <- 564
 
 
 # this is stupid, the matrix is needed just for its length
@@ -171,6 +188,14 @@ ln_plots <- ggplot(dframe_lnplt, aes(x=Threshold)) +
 	geom_path(aes(y=Avg_NB, group=1), color="#F8766D", size=2) +
 	scale_x_discrete(limits=rev(levels(as.factor(dframe_bxplt$Threshold))))
 
+
+# changing the output size for the plot
+# somehow this increases the resolution significantly, the ratio however is similar enough
+dev.new(width = wid, height = hei, unit="px", noRStudioGD=TRUE)
+# change to font size of the ggplots
+font_size <- 20
+ln_plots <- ln_plots + theme(text = element_text(size=font_size))
+bx_plots <- bx_plots + theme(text = element_text(size=font_size))
 egg::ggarrange(bx_plots, ln_plots)
 
 # old plotting
