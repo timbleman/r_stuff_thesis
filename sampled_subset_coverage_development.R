@@ -179,7 +179,7 @@ get_order <- function(set_path){
 get_random_order <- function(set_path){
   setwd(set_path)
   # use for_each_num_obes.csv as dummy file
-  for_each_num_obes <- read.csv("for_each_num_obes.csv", row.names=1)
+  for_each_num_obes <- read.csv("for_each_num_obes.csv", check.names=FALSE, row.names=1)
   shuffeled_names <- sample(rownames(for_each_num_obes))
   return(shuffeled_names)
 }
