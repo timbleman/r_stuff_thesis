@@ -165,7 +165,7 @@ dframe_lnplt <- data.frame(
 
 if (NUMBER_OF_METRICS == 1){
 	# set colors for the plot
-	cols <- c("brown3")
+	cols <- c("#F8766D")
 	names(cols) <- c(metric1)
 }
 if (NUMBER_OF_METRICS == 2){
@@ -173,7 +173,7 @@ if (NUMBER_OF_METRICS == 2){
 	dframe_lnplt$Avg_NB_2 = nb_vec2
 
 	# set colors for the plot
-	cols <- c("brown3", "cadetblue3")
+	cols <- c("#F8766D", "#7AC5CD")
 	names(cols) <- c(metric1, metric2)
 }
 if (NUMBER_OF_METRICS == 3){
