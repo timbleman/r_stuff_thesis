@@ -1,6 +1,9 @@
 # draw boxplots for all similarities in a matrix for two configurations
 
-setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
+# non OBE
+setwd("C:/CS1_R-Intro/experiments-driver-ai-no-obe-wo-minlen-wo-infspeed")
+# OBE
+#setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
 
 library(ggplot2)
 library(hrbrthemes)
@@ -13,6 +16,19 @@ metric2 = "cursdl_lcstr_7ang_nnorm.csv"
 
 #metric1 = "cur_sdl_1_lcsstr_dist_not_normalized.csv"
 #metric2 = "cur_sdl_5_lcstr_dist_not_normalized.csv"
+
+#metric1 = "steering_bin.csv"
+#metric2 = "steering_sin.csv"
+#metric1 = "steering_adj_bin.csv"
+#metric2 = "steering_adj_sin.csv"
+
+#metric1 = "speed_bin.csv"
+#metric2 = "speed_sin.csv"
+
+metric1 = "steering_speed_bin.csv"
+metric2 = "steering_speed_sin.csv"
+#metric1 = "steering_speed_adj_bin.csv"
+#metric2 = "steering_speed_adj_sin.csv"
 
 similarity_matrix_1 <- read.csv(metric1, check.names=FALSE, row.names=1)
 similarity_matrix_2 <- read.csv(metric2, check.names=FALSE, row.names=1)
@@ -47,7 +63,11 @@ names <- vec_remove_file_endings(names)
 dframe_2_bxplt <- data.frame(metric_1_list, metric_2_list)
 dframe_2_bxplt.names = c(metric1, metric2)
 
+par(mar=c(5,5,4,1)+.1) # bigger margins for axis titles
 font_mult <- 1.5
-boxplot(metric_1_list, metric_2_list, names=names, cex.axis=font_mult)
+boxplot(metric_1_list, metric_2_list, names=names, ylab="Similarity value", 
+		cex.axis=font_mult, cex.lab=(font_mult+0.2))
+title(xlab="Similarity metric", line=3, cex.lab=(font_mult+0.2))
+
 #ggplot(dframe_2_bxplt) +
 #	geom_boxplot(aes(y=names[1]))

@@ -87,14 +87,15 @@ for (i in seq(1, length(names), by=2)){
 # somehow this increases the resolution significantly, the ratio however is similar enough
 #dev.new(width = wid, height = hei, unit="px", noRStudioGD=TRUE)
 
-#par(mar=c(6,4,4,1)+.1) # bigger margins are not needed
+par(mar=c(6,5,4,1)+.1) # bigger margins for axis titles
 font_mult <- 1.5
-boxplot(metric_1_list, metric_2_list, metric_3_list, names=names, #ylim=c(0,1),
-		cex.axis=font_mult, xaxt="n", mgp=c(4.5,3,3))
+boxplot(metric_1_list, metric_2_list, metric_3_list, names=names, ylab="Similarity value", #ylim=c(0,1),
+		    cex.axis=font_mult, cex.lab=(font_mult+0.2), xaxt="n", mgp=c(4.5,3,3))
 # stupid hacky thing to have 2 axis
 axis(side=1, at=seq(1,3,2), labels=names[seq(1,3,2)], cex.axis=font_mult,
 	 tick=FALSE, line=3.5)
 axis(side=1, at=seq(2,3,2), labels=names[seq(2,3,2)], cex.axis=font_mult,
 	tick=FALSE)
+title(xlab="Similarity metric", line=4.7, cex.lab=(font_mult+0.2))
 #ggplot(dframe_2_bxplt) +
 #	geom_boxplot(aes(y=names[1]))
