@@ -13,17 +13,20 @@ library(hrbrthemes)
 #metric1 = "jaccard_7ang_4len.csv" 
 #metric2 = "jaccard_11ang_4len.csv"
 #metric3 = "jaccard_15ang_4len.csv"
+
 # uncomment for sliding window 1d alphabet size
 #metric1 = "cursdl_sw_7ang.csv"
 #metric2 = "cursdl_sw_11ang.csv"
 #metric3 = "cursdl_sw_15ang.csv"
+
 # uncomment for sliding window 2d alphabet size
-#metric1 = "sdl_2d_28alph.csv"
-#metric2 = "sdl_2d_44alph.csv"
-#metric3 = "sdl_2d_60alph.csv"
+#metric1 = "sdl2d_sw_44alph.csv"
+#metric2 = "sdl2d_sw_60alph.csv"
+#metric3 = "sdl2d_sw_120alph.csv"
 #metric1 = "sdl2d_sw_11ang_4len.csv" 
 #metric2 = "sdl2d_sw_15ang_4len.csv"
 #metric3 = "sdl2d_sw_15ang_8len.csv"
+
 # uncomment for lcstr alphabet size, bng only
 metric1 = "cursdl_lcstr_7ang_nnorm.csv"
 metric2 = "cursdl_1_lcstr_7ang_nnorm.csv"
@@ -37,8 +40,8 @@ metric3 = "cursdl_5_lcstr_7ang_nnorm.csv"
 
 
 # define width and height of plots for a more consistent presentation
-#wid <- 633
-#hei <- 633
+wid <- 633
+hei <- 633
 
 similarity_matrix_1 <- read.csv(metric1, check.names=FALSE, row.names=1)
 similarity_matrix_2 <- read.csv(metric2, check.names=FALSE, row.names=1)
@@ -85,7 +88,7 @@ for (i in seq(1, length(names), by=2)){
 
 # changing the output size for the plot
 # somehow this increases the resolution significantly, the ratio however is similar enough
-#dev.new(width = wid, height = hei, unit="px", noRStudioGD=TRUE)
+dev.new(width = wid, height = hei, unit="px", noRStudioGD=TRUE)
 
 par(mar=c(6,5,4,1)+.1) # bigger margins for axis titles
 font_mult <- 1.5
