@@ -63,7 +63,9 @@ names <- c(metric1, metric2)
 # load the corresponding function from "rand_samp_subset_obe_and_cov.R", use chdir
 # this is shit, look into "C:/CS1_R-Intro/boxplots_3_similarities.R" for more info
 if (!exists("vec_remove_file_endings")){
+  prev_names <- names
   source("C:/CS1_R-Intro/rand_samp_subset_obe_and_cov.R")
+  names <- prev_names
 }
 names <- vec_remove_file_endings(names)
 dframe_2_bxplt <- data.frame(metric_1_list, metric_2_list)

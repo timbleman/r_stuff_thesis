@@ -74,9 +74,11 @@ names <- c(metric1, metric2, metric3)
 # load the corresponding function from "rand_samp_subset_obe_and_cov.R", use chdir
 # the way R handles loading functions is pretty dumb
 if (!exists("vec_remove_file_endings")){
+  prev_names <- names
   #vec_remove_file_endings <- function(names_vec, file_ending=".csv"){0}
   #insertSource("C:/CS1_R-Intro/rand_samp_subset_obe_and_cov.R", functions="vec_remove_file_endings")
   source("C:/CS1_R-Intro/rand_samp_subset_obe_and_cov.R")
+  names <- prev_names
 }
 names <- vec_remove_file_endings(names)
 dframe_2_bxplt <- data.frame(metric_1_list, metric_2_list, metric_3_list)
