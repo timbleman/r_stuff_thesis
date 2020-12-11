@@ -4,30 +4,36 @@ library(egg)  # for having plots stacked
 
 
 setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
-#setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
+setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
 
 
 STEPLINE_INSTEAD_OF_LINEPLOT = FALSE
 # from 1 to 3
-NUMBER_OF_METRICS = 2
+NUMBER_OF_METRICS = 1
 
 # get obe count for all tests and extract the ones that fail
 for_each_num_obes <- read.csv("for_each_num_obes.csv" , row.names=1)
 tests_that_fail <- row.names(for_each_num_obes)[for_each_num_obes$num_obes == 1]
 
 # do not get filled, remaining from previous single metric plotting
-vals_of_interest <- c("0.95" = 0.0,
+vals_of_interest <- c("0.98" = 0.0,
 				"0.9" = 0.0,
-				"0.82" = 0.0,
 				"0.8" = 0.0,
 				"0.7" = 0.0,
 				"0.0" = 0.0)
 # FIXME the metrics have to be in alphabetic order for the legend to be correct
-# uncomment for jaccard
+# uncomment for jaccard, choose between old and new alphabet name
 #metric1 = "jaccard_7ang_4len.csv"
-metric1 = "jaccard_11ang_8len.csv"
-metric2 = "jaccard_11ang_4len.csv"
+#metric1 = "jaccard_11ang_8len.csv"
+#metric2 = "jaccard_11ang_4len.csv"
 #metric3 = "jaccard_15ang_4len.csv"
+#metric1 = "jaccard_7ang_4len.csv"
+#metric1 = "jaccard_28alph.csv"
+#metric1 = "jaccard_44alph.csv"
+#metric2 = "jaccard_88alph.csv"
+#metric2 = "jaccard_44alph.csv"
+#metric3 = "jaccard_60alph.csv"
+
 
 # uncomment for sliding window 1d alphabet size
 #metric1 = "cursdl_sw_7ang.csv"
@@ -35,15 +41,16 @@ metric2 = "jaccard_11ang_4len.csv"
 #metric3 = "cursdl_sw_15ang.csv"
 # uncomment for sliding window 2d alphabet size
 #metric1 = "sdl2d_sw_7ang_4len.csv"
-#metric1 = "sdl2d_sw_11ang_4len.csv"
-#metric2 = "sdl2d_sw_15ang_4len.csv"
-#metric3 = "sdl2d_sw_15ang_8len.csv"
+#metric1 = "sdl2d_sw_44alph.csv"
+#metric2 = "sdl2d_sw_60alph.csv"
+#metric3 = "sdl2d_sw_120alph.csv"
 # uncomment for lcs
 #metric1 = "cursdl_lcs_7ang.csv"   
 # uncomment for lcstr 0, 1 and 5 mismatches
 #metric1 = "cursdl_1_lcstr_7ang.csv"
 #metric2 = "cursdl_5_lcstr_7ang.csv"
-#metric3 = "cursdl_lcstr_7ang.csv"   # metric1 = "cursdl_lcs_7ang.csv"
+#metric3 = "cursdl_lcstr_7ang.csv"   # 
+metric1 = "cursdl_lcs_7ang.csv"
 # uncomment for steering speed 2d output similarity
 #metric1 = "steering_speed_dist_binary.csv"
 #metric2 = "steering_speed_dist_single.csv"
@@ -57,6 +64,9 @@ metric2 = "jaccard_11ang_4len.csv"
 # OBE
 wid <- 830
 hei <- 564
+
+# whether to leave '.csv' in the plots
+STRIP_FILE_ENDING <- TRUE
 
 # bool to control what neighbors are taken
 GREATER_THAN = TRUE
@@ -193,6 +203,24 @@ pick <- function(condition){
 
 dframe_bxplt$Threshold <- as.factor(dframe_bxplt$Threshold) 
 
+
+if (STRIP_FILE_ENDING){
+  # strip the .csv ending in the names
+  # load the corresponding function from "rand_samp_subset_obe_and_cov.R", use chdir
+  # this is shit, look into "C:/CS1_R-Intro/boxplots_3_similarities.R" for more info
+  if (!exists("vec_remove_file_endings")){
+    source("C:/CS1_R-Intro/rand_samp_subset_obe_and_cov.R")
+  }
+  names(cols) <- vec_remove_file_endings(names(cols))
+  dframe_bxplt$Metric <- vec_remove_file_endings(dframe_bxplt$Metric)
+  metric1_strpd <- vec_remove_file_endings(metric1)
+  metric2_strpd <- vec_remove_file_endings(metric2)
+  metric3_strpd <- vec_remove_file_endings(metric3)
+}
+
+# make the Metric a factor to be able to reorder the legend
+dframe_bxplt$Metric <- factor(dframe_bxplt$Metric, levels=names(cols))
+
 bx_plots <- ggplot(dframe_bxplt, aes(x=Threshold, y=OBE_Ratios)) +
 	scale_x_discrete(limits=rev(levels(as.factor(dframe_bxplt$Threshold)))) +
 	geom_boxplot(aes(fill=Metric)) +
@@ -200,11 +228,11 @@ bx_plots <- ggplot(dframe_bxplt, aes(x=Threshold, y=OBE_Ratios)) +
 	theme(axis.text.x=element_blank(), axis.title.x=element_blank())  # remove x axis for upper plot
 
 base_stp_line <- ggplot(dframe_bxplt, aes(x=Threshold, y=OBE_Ratios)) +
-			geom_line(data=pick(~Metric== metric1), aes(y=Avg_NB, group=1), color=cols[metric1], size=2, show.legend=FALSE) + 
+			geom_line(data=pick(~Metric==metric1_strpd), aes(y=Avg_NB, group=1), color=cols[metric1_strpd], size=2, show.legend=FALSE) + 
 			scale_x_discrete(limits=rev(levels(as.factor(dframe_bxplt$Threshold))))
 
 base_connected_line <- ln_plots <- ggplot(dframe_lnplt, aes(x=Threshold)) +
-			geom_line(aes(y=Avg_NB_1, group=1), color=cols[metric1], size=2, show.legend=FALSE) +
+			geom_line(aes(y=Avg_NB_1, group=1), color=cols[metric1_strpd], size=2, show.legend=FALSE) +
 			scale_x_discrete(limits=rev(levels(as.factor(dframe_lnplt$Threshold)))) +
 			labs(y="Avg_Neighborhood")
 
@@ -214,12 +242,12 @@ if (STEPLINE_INSTEAD_OF_LINEPLOT){
 	}
 	if (NUMBER_OF_METRICS == 2){
 		ln_plots <- base_stp_line +
-			geom_line(data=pick(~Metric== metric2), aes(y=Avg_NB, group=1), color=cols[metric2], size=2, show.legend=FALSE)
+			geom_line(data=pick(~Metric== metric2_strpd), aes(y=Avg_NB, group=1), color=cols[metric2_strpd], size=2, show.legend=FALSE)
 	}
 	if (NUMBER_OF_METRICS == 3){
 		ln_plots <- base_stp_line +
-			geom_line(data=pick(~Metric== metric2), aes(y=Avg_NB, group=1), color=cols[metric2], size=2, show.legend=FALSE) +
-			geom_line(data=pick(~Metric== metric3), aes(y=Avg_NB, group=1), color=cols[metric3], size=2, show.legend=FALSE)
+			geom_line(data=pick(~Metric== metric2_strpd), aes(y=Avg_NB, group=1), color=cols[metric2_strpd], size=2, show.legend=FALSE) +
+			geom_line(data=pick(~Metric== metric3_strpd), aes(y=Avg_NB, group=1), color=cols[metric3_strpd], size=2, show.legend=FALSE)
 	}
 } else {
 	if (NUMBER_OF_METRICS == 1){
@@ -227,12 +255,12 @@ if (STEPLINE_INSTEAD_OF_LINEPLOT){
 	}
 	if (NUMBER_OF_METRICS == 2){
 		ln_plots <- base_connected_line +
-			geom_line(aes(y=Avg_NB_2, group=1), color=cols[metric2], size=2, show.legend=FALSE)
+			geom_line(aes(y=Avg_NB_2, group=1), color=cols[metric2_strpd], size=2, show.legend=FALSE)
 	}
 	if (NUMBER_OF_METRICS == 3){
 		ln_plots <- base_connected_line +
-			geom_line(aes(y=Avg_NB_2, group=1), color=cols[metric2], size=2, show.legend=FALSE) +
-			geom_line(aes(y=Avg_NB_3, group=1), color=cols[metric3], size=2, show.legend=FALSE)
+			geom_line(aes(y=Avg_NB_2, group=1), color=cols[metric2_strpd], size=2, show.legend=FALSE) +
+			geom_line(aes(y=Avg_NB_3, group=1), color=cols[metric3_strpd], size=2, show.legend=FALSE)
 	}
 }
 
