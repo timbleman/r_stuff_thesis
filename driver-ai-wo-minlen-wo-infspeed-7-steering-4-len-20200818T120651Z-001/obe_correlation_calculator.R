@@ -1,32 +1,35 @@
 # compute correlation between test obe behavior to similarity
 
+# jo, jitter makes everthing a bit more readable, amny dont have near tests
+# plot(jitter(distances, factor=0.1), jitter(for_each_num_obes[,"num_obes"], factor=0.1))
+
 # path to tests
-#setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
+setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
 # setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
-setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
+#setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
 
 for_each_num_obes <- read.csv("for_each_num_obes.csv")
 
 tests_that_fail <- for_each_num_obes[for_each_num_obes$num_obes == 1, ]
 
-input_names_to_load <- list("jaccard.csv" = NA, 
-					"jaccard_11ang.csv" = NA,
-					"jaccard_15ang.csv" = NA,
-					"sdl_2d_dist.csv" = NA,
-					"sdl_2d_dist_11ang.csv" = NA,
-					"curve_sdl_dist.csv" = NA)
-#input_names_to_load <- list ("cur_sdl_lcs_dist.csv" = NA,
-#					"cur_sdl_lcstr_dist.csv" = NA,
-#					"cur_sdl_1_lcstr_dist.csv" = NA,
-#					"cur_sdl_2_lcstr_dist.csv" = NA,
-#					"cur_sdl_3_lcstr_dist.csv" = NA,
-#					"cur_sdl_5_lcstr_dist.csv" = NA,
-#					"sdl_2d_lcs_dist.csv" = NA,
-#					"sdl_2d_lcstr_dist.csv" = NA,
-#					"sdl_2d_1_lcstr_dist.csv" = NA,
-#					"sdl_2d_2_lcstr_dist.csv" = NA,
-#					"sdl_2d_3_lcstr_dist.csv" = NA,
-#					"sdl_2d_5_lcstr_dist.csv" = NA)
+# comment or uncomment these for desired metrics
+input_names_to_load <- list("jaccard_7ang_4len.csv" = NA, 
+					"jaccard_11ang_4len.csv" = NA,
+					"jaccard_11ang_8len.csv" = NA,
+					"jaccard_15ang_8len.csv" = NA)
+input_names_to_load <- list("sdl2d_sw_28alph.csv" = NA, 
+                            "sdl2d_sw_44alph.csv" = NA,
+                            "sdl2d_sw_88alph.csv" = NA,
+                            "sdl2d_sw_60alph.csv" = NA,
+                            "sdl2d_sw_120alph.csv" = NA)
+input_names_to_load <- list("cursdl_sw_7ang.csv" = NA, 
+                            "cursdl_sw_11ang.csv" = NA,
+                            "cursdl_sw_15ang.csv" = NA)
+input_names_to_load <- list ("cursdl_lcs_7ang.csv" = NA,
+					"cursdl_lcstr_7ang.csv" = NA,
+					"cursdl_1_lcstr_7ang.csv" = NA,
+					"cursdl_3_lcstr_7ang.csv" = NA,
+					"cursdl_5_lcstr_7ang.csv" = NA)
 
 
 # Load all the csvs for the names 
