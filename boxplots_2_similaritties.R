@@ -1,17 +1,18 @@
-# draw boxplots for all similarities in a matrix for two configurations
-
-setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
+# Draw box plots for all similarity values in a matrix for two configurations
+# Adjust the set, bng with or without OBEs
+# Selecet two metrics (metric1, metric2) to plot
+# W_YLIM: With or without ylim
 
 # non OBE, use these only if the output metrics are not computed for with OBEs
-setwd("C:/CS1_R-Intro/experiments-driver-ai-no-obe-wo-minlen-wo-infspeed")
+setwd("C:/CS1_R-Intro/experiments-beamng-ai-no-obe-wo-minlen-wo-infspeed")
 # OBE
-#setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
+setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
 
 library(ggplot2)
 library(hrbrthemes)
 
-metric1 = "jaccard.csv"
-metric2 = "jaccard_11ang.csv"
+# turn off the ylim for box plots for LCS and derivatives
+W_YLIM = FALSE
 
 metric1 = "cursdl_lcs_7ang_nnorm.csv"
 metric2 = "cursdl_lcstr_7ang_nnorm.csv"
@@ -76,8 +77,13 @@ dev.new(width = wid, height = hei, unit="px", noRStudioGD=TRUE)
 
 par(mar=c(5,5,4,1)+.1) # bigger margins for axis titles
 font_mult <- 1.5
-boxplot(metric_1_list, metric_2_list, names=names, ylab="Similarity value", 
-		cex.axis=font_mult, cex.lab=(font_mult+0.2))
+if (W_YLIM){
+  boxplot(metric_1_list, metric_2_list, names=names, ylab="Similarity value", ylim=c(0,1),
+		      cex.axis=font_mult, cex.lab=(font_mult+0.2))
+} else {
+  boxplot(metric_1_list, metric_2_list, names=names, ylab="Similarity value", 
+          cex.axis=font_mult, cex.lab=(font_mult+0.2))
+}
 title(xlab="Similarity metric", line=3, cex.lab=(font_mult+0.2))
 
 #ggplot(dframe_2_bxplt) +
