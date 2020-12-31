@@ -1,6 +1,13 @@
-# library(ggplot2)   # is there something like requirements?
+#############################################################
+#############################################################
+############This code is deprecated, do not use##############
+########## use nearest_neighbors_obes_3metrics.R ############
+#############################################################
+#############################################################
 
-#setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
+library(ggplot2)   # is there something like requirements?
+
+setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
 setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
 
 
@@ -13,15 +20,15 @@ BOXPLOT_INSTEAD_OF_LINEPLOT = TRUE
 
 # adjust these two
 vals_of_interest <- c("0.98" = 0.0,
-				"0.95" = 0.0, 
+				"0.95" = 0.0,
 				"0.9" = 0.0,
 				"0.85" = 0.0,
-				"0.8" = 0.0,
-				"0.6" = 0.0,
+				"0.75" = 0.0,
 				"0.0" = 0.0)
 #vals_of_interest <- c("0.9" = 0.0)
-#name = "jaccard.csv"
-name = "cur_sdl_1_lcstr_dist.csv"
+name = "jaccard_44alph.csv"
+name = "curve_sdl_dist_15ang.csv"
+#name = "cur_sdl_lcs_dist.csv"
 #name = "sdl_2d_dist.csv"
 #name = "speering_speed_dist.csv"
 
@@ -74,6 +81,7 @@ for (val_str in names(vals_of_interest)){
 
 		# look how many neighbors have OBEs
 		num_obes <- 0
+		i <- 0
 		for (nb in close_neighbors){
 			if (nb %in% tests_that_fail){
 				num_obes <- num_obes + 1
@@ -95,6 +103,10 @@ for (val_str in names(vals_of_interest)){
 		# fill complete vector
 		all_ratios_vec[all_ratios_vec_i] <- obes_ratio
 		all_ratios_vec_i <- all_ratios_vec_i + 1
+
+		if (threshold >= 0.8){
+			print(paste(test_name, "has", num_obes, "OBE neighbors at thold", threshold))
+		}
 	}
 	avg_obes_ratio_threshold <- sum_obes_ratio_threshold / length(tests_that_fail)
 	avg_num_nb <- sum_num_nb / length(tests_that_fail)

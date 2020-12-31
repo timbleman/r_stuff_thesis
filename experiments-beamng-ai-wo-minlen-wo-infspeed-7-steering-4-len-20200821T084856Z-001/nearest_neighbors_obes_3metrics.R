@@ -1,38 +1,40 @@
-library(ggplot2)
+# Used for all OBE ratio plots in RQ1 (OBE tests as start points)
+# Things to adjust:
+# Select a set (BeamNG.AI or DriverAI path)
+# Select the number of metrics in a plot
+# Add more thresholds to look at in vals_of_interest
+
+
+(ggplot2)
 library(dplyr)  # for the filter function
 library(egg)  # for having plots stacked
 
 
+# select a set
 setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
 setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
 
+# Number of metrics in a plot, from 1 to 3
+NUMBER_OF_METRICS = 3
 
-STEPLINE_INSTEAD_OF_LINEPLOT = FALSE
-# from 1 to 3
-NUMBER_OF_METRICS = 1
-
-# get obe count for all tests and extract the ones that fail
-for_each_num_obes <- read.csv("for_each_num_obes.csv" , row.names=1)
-tests_that_fail <- row.names(for_each_num_obes)[for_each_num_obes$num_obes == 1]
-
+# Add more thresholds
 # do not get filled, remaining from previous single metric plotting
 vals_of_interest <- c("0.98" = 0.0,
 				"0.9" = 0.0,
 				"0.8" = 0.0,
 				"0.7" = 0.0,
 				"0.0" = 0.0)
-# FIXME the metrics have to be in alphabetic order for the legend to be correct
 # uncomment for jaccard, choose between old and new alphabet name
 #metric1 = "jaccard_7ang_4len.csv"
 #metric1 = "jaccard_11ang_8len.csv"
 #metric2 = "jaccard_11ang_4len.csv"
 #metric3 = "jaccard_15ang_4len.csv"
 #metric1 = "jaccard_7ang_4len.csv"
-#metric1 = "jaccard_28alph.csv"
+metric1 = "jaccard_28alph.csv"
 #metric1 = "jaccard_44alph.csv"
 #metric2 = "jaccard_88alph.csv"
-#metric2 = "jaccard_44alph.csv"
-#metric3 = "jaccard_60alph.csv"
+metric2 = "jaccard_44alph.csv"
+metric3 = "jaccard_60alph.csv"
 
 
 # uncomment for sliding window 1d alphabet size
@@ -50,7 +52,7 @@ vals_of_interest <- c("0.98" = 0.0,
 #metric1 = "cursdl_1_lcstr_7ang.csv"
 #metric2 = "cursdl_5_lcstr_7ang.csv"
 #metric3 = "cursdl_lcstr_7ang.csv"   # 
-metric1 = "cursdl_lcs_7ang.csv"
+#metric1 = "cursdl_lcs_7ang.csv"
 # uncomment for steering speed 2d output similarity
 #metric1 = "steering_speed_dist_binary.csv"
 #metric2 = "steering_speed_dist_single.csv"
@@ -64,6 +66,13 @@ metric1 = "cursdl_lcs_7ang.csv"
 # OBE
 wid <- 830
 hei <- 564
+
+# get obe count for all tests and extract the ones that fail
+for_each_num_obes <- read.csv("for_each_num_obes.csv" , row.names=1)
+tests_that_fail <- row.names(for_each_num_obes)[for_each_num_obes$num_obes == 1]
+
+# deprecated, leave as is
+STEPLINE_INSTEAD_OF_LINEPLOT = FALSE
 
 # whether to leave '.csv' in the plots
 STRIP_FILE_ENDING <- TRUE
