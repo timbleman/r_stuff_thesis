@@ -10,10 +10,10 @@ setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-l
 #setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
 
 # comment or uncomment these for desired metrics
-input_names_to_load <- list("jaccard_7ang_4len.csv" = NA, 
-					"jaccard_11ang_4len.csv" = NA,
-					"jaccard_11ang_8len.csv" = NA,
-					"jaccard_15ang_8len.csv" = NA)
+input_names_to_load <- list("jaccard_28alph.csv" = NA, 
+					"jaccard_44alph.csv" = NA,
+					"jaccard_88alph.csv" = NA,
+					"jaccard_60alph.csv" = NA)
 input_names_to_load <- list("sdl2d_sw_28alph.csv" = NA, 
                             "sdl2d_sw_44alph.csv" = NA,
                             "sdl2d_sw_88alph.csv" = NA,
