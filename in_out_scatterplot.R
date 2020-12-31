@@ -1,4 +1,4 @@
-# scatterplot of input and output similarities for one test
+# Scatterplot of input and output similarities for one test, never used in the thesis
 
 # without OBEs
 setwd("C:/CS1_R-Intro/experiments-driver-ai-no-obe-wo-minlen-wo-infspeed")

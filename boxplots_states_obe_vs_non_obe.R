@@ -1,9 +1,9 @@
-# executions for obe and non obe test cases
-
+# Box plots of num states for obe and non obe test cases
+# choose a test suite
 setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
-#setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
+setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
 
-# configure these
+# Sample to speed up the process, not needed
 sample_instead_of_all = FALSE
 sample_size <- 18
 
@@ -25,4 +25,6 @@ if (sample_instead_of_all){
 }
 names <- c("OBE tests", "non OBE tests")
 
-boxplot(num_obe_states, num_non_obe_states, names=names)
+font_mult = 1.5
+boxplot(num_obe_states, num_non_obe_states, names=names, xlab="Test outcome", 
+        ylab="Number of states", cex.axis=font_mult, cex.lab=font_mult)

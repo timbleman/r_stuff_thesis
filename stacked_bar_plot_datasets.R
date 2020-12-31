@@ -1,5 +1,5 @@
-# plot for the number of OBEs in BeamNG/DriverAI Datasets
-# numbers have been collected manually
+# Stacked bar plot for the number of OBEs in BeamNG/DriverAI Datasets
+# Numbers have been collected manually, nothing to adjust
 
 setwd("C:/CS1_R-Intro/")
 

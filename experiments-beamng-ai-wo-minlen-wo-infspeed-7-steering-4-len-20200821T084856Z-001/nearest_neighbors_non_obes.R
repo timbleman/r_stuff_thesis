@@ -1,32 +1,38 @@
+# Plot OBE ratio for neighbors of non-OBE tests, used in RQ1
+# Things to adjust:
+# The path in setwd(), DriverAI or BeamNG.AI
+# Thresholds in vals_of_interest
+# Choose a metric in name
+
+
 library(ggplot2)   # is there something like requirements?
 library(egg)
 
+# Pick a suite
 setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
 #setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
+
+# Choose thresholds
+vals_of_interest <- c("0.95" = 0.0,
+                      "0.9" = 0.0,
+        "0.8" = 0.0,
+				"0.7" = 0.0,
+				"0.0" = 0.0)
+
+# Pick a metric
+#name = "jaccard_44alph.csv"
+#name = "cur_sdl_lcs_dist.csv"
+name = "sdl2d_sw_44alph.csv"
+#name = "cursdl_sw_11ang.csv"
+#name = "curve_sdl_dist_11ang.csv"
+#name = "speering_speed_dist.csv"
 
 
 # get obe count for all tests and extract the ones that fail
 for_each_num_obes <- read.csv("for_each_num_obes.csv" , row.names=1)
 tests_that_fail <- row.names(for_each_num_obes)[for_each_num_obes$num_obes == 1]
 tests_that_dont_fail <- row.names(for_each_num_obes)[for_each_num_obes$num_obes == 0]
-
-
 BOXPLOT_INSTEAD_OF_LINEPLOT = TRUE
-
-# adjust these two
-vals_of_interest <- c("0.95" = 0.0,
-                      "0.9" = 0.0,
-        "0.8" = 0.0,
-				"0.7" = 0.0,
-				"0.0" = 0.0)
-#vals_of_interest <- c("0.9" = 0.0)
-#name = "jaccard_11ang_4len.csv"
-#name = "cur_sdl_lcs_dist.csv"
-name = "sdl2d_sw_11ang_4len.csv"
-#name = "cursdl_sw_11ang.csv"
-#name = "curve_sdl_dist_11ang.csv"
-#name = "speering_speed_dist.csv"
-
 
 # define width and height of plots for a more consistent presentation
 # non OBE

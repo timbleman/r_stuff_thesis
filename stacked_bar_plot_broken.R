@@ -1,4 +1,5 @@
-# plot for the broken tests in both datasets
+# Stacked bar plot for the broken tests in both datasets
+# Values collected outside R, nothing to adjust
 
 setwd("C:/CS1_R-Intro/")
 

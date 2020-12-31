@@ -1,4 +1,5 @@
-# bar plots for alphabet length compare times
+# Bar plots for alphabet length compare times
+# Values collected outside R, nothing to adjust
 
 library(ggplot2)
 library(hrbrthemes)
@@ -10,14 +11,14 @@ CUR_SDL_comp_times <- c("7" = 26.93, "11" = 28.71, "15" =31.04)
 
 vec <- c(Jaccard_comp_times, SDL_2D_comp_times, CUR_SDL_comp_times)
 
-# ugly and hacky, lol
+# ugly and hacky
 first_col <- "#FEEB65"
 second_col <- "#E4521B"
 third_col <- "#4D342F"
 cols <- c(first_col, second_col, third_col, "#00FF99", 
           first_col, second_col, third_col, "#00FF99",
           first_col, second_col, third_col, "#00FF99")
-# ugly and hacky, lol
+# ugly and hacky
 names = "Jaccard                  sw_sdl_2d               sw_cur_sdl"
 
 par(mar=c(5,5,4,1)+.1)  # margins bottom, left, top, right
