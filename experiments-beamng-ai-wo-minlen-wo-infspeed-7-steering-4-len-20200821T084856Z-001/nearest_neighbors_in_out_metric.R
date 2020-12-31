@@ -1,14 +1,27 @@
+# Used for research question 2
+# Plots the input-output shared neighborhood
+# Collects tests up to a certain threshold in the input, checks if these are also
+# in the n closest output
+#
+# Things to adjust or not:
+# Use only the DriverAI set without OBEs if you want to replicate thesis experiments
+# Vals of interest: Add or remove thresholds
+# metric_in: one input metric
+# metric_out: one output metric
+# the rest has not been adjusted
+
 library(ggplot2)  
 library(egg)
 
+# Possible sets
 # with OBEs, do not use
 #setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
 #setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
-
-# without OBEs
+# without OBEs, only DriverAI used in thesis
 setwd("C:/CS1_R-Intro/experiments-driver-ai-no-obe-wo-minlen-wo-infspeed")
 #setwd("C:/CS1_R-Intro/experiments-beamng-ai-no-obe-wo-minlen-wo-infspeed")
 
+# Divide the number of shared tests by the size of the neighborhood instead of the union
 LENGTH_INSTEAD_OF_UNION_SHARED = TRUE
 
 # do not get filled, remaining from previous single metric plotting
@@ -20,29 +33,31 @@ vals_of_interest <- c(
 				"0.7" = 0.0,
 				"0.65" = 0.0,
 				"0.6" = 0.0,
+				"0.5" = 0.0,
 				"0.0" = 0.0)
-# uncomment for jaccard
+# input metric used in the thesis
+# only jaccard_44 and sdl_2d_dist_44alph are used in the thesis
 #metric_in = "jaccard_28alph.csv"
-#metric_in = "jaccard_44alph.csv"
+metric_in = "jaccard_44alph.csv"
 #metric_in = "jaccard_11ang_4len.csv"
 #metric_in = "jaccard_60alph.csv"
 #metric_in = "sdl_2d_dist_44alph.csv"sampled_avg_nb_nonrep
 #metric_in = "sdl2d_sw_11ang_4len.csv"
 #metric_in = "sdl2d_sw_11ang_4len.csv"
 #metric_in = "cursdl_sw_11ang.csv"
-#metric_out = "steering_speed_dist.csv"
+
+# output metrics used in the thesis
 #metric_out = "steering_sin.csv"
 #metric_out = "steering_bin.csv"
 #metric_out = "steering_sin.csv"
 #metric_out = "steering_adj_bin.csv"
 #metric_out = "steering_adj_sin.csv"
-
 #metric_out = "speed_bin.csv"
 #metric_out = "speed_sin.csv"
-metric_in = "speed_sin.csv"
-metric_out = "steering_speed_sin.csv"
+#metric_in = "speed_sin.csv"
+#metric_out = "steering_speed_sin.csv"
 #metric_out = "steering_speed_bin.csv"
-#metric_out = "steering_speed_adj_sin.csv"
+metric_out = "steering_speed_adj_sin.csv"
 #metric_out = "steering_speed_adj_bin.csv"
 
 
