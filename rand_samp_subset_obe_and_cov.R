@@ -1,18 +1,28 @@
-# plots coverages and obes of adaptive random sampling subsets
+# Creates a table including coverages and obes of adaptive random sampling subsets
+# The table has to be further adjusted in LaTeX to have the same look as in the thesis.
+# Used in RQ3
+# What to adjust:
+# bng_or_drvr: Select a group of paths to subsets
+# relative_instead_of_absolute_coverages: Coverage values relative to the suite the subsets were extracted from
+# covs_of_interest: coverage metrics that should be in the table, add their csv name ("speed_bins.csv") and/or "OBE"
+# Note: If you deviate from my folder structure, all the paths have to be adjusted manually!
+# The paths should be shared between this script and sampled_subset_coverage_development.R, for now you have to copy and paste.
 library(ggplot2)
 library(reshape2)
 library(xtable)
 
+# Select a dataset ("bng" or "drvr")
 bng_or_drvr = "drvr"
+# Tables do not have to be merges, leave at "covs"
 obes_or_covs = "covs"
 
-# relative to parent suite
+# Relative coverage values to parent suite
 relative_instead_of_absolute_coverages <- TRUE
-# condense obe and non obe startpoints
-# validity checks, keep off for dummy suites, do not work anyways lol
+# Condense obe and non obe startpoints
+# Validity checks, keep off for dummy suites, do not work anyways lol
 CHECKS = FALSE
 
-# coverages of interest
+# Coverages of interest
 covs_of_interest <- c("steering_bins.csv", "steering_bins_cleanup.csv",
                       "steering_bins_non_uniform_percentile.csv",
                       "speed_bins.csv", 
@@ -24,6 +34,9 @@ covs_of_interest <- c("steering_bins.csv", "steering_bins_cleanup.csv",
 #                      "speed_steering_2d_bins_cleanup.csv")
 
 
+# Add paths to the subsets
+# All these have to adjusted manually if you deviate from my file location or naming!
+# Mind the groups of the paths.
 if(bng_or_drvr == "bng"){
   higher_level_folder <- "C:/CS1_R-Intro/div_bng5_only_results/"
   paths_lowdiv_obe <- c("experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la111",
@@ -90,6 +103,7 @@ if(bng_or_drvr == "bng"){
   )
   parent_suite <- "C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001"
 }
+# Ignore the start points for adaptive random sampling, done in RQ4
 ignore_obe <- TRUE
 if (ignore_obe){
   listed_set_paths <- list("hidiv" = c(paths_hidiv_obe, paths_hidiv_nonobe),

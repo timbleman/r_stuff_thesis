@@ -1,33 +1,46 @@
-# plot the coverage development of multiple subsets
+# Plots the coverage development of multiple subsets, uses cumulative plots
+# high diversity, low diversity and random subsets used 
+# Used in RQ4
+# Writes plots to the path specified in png_save_path
+# Takes a fair amount of time, be patient
+# Averages out the coverage values of subsets of the same class
+# What to adjust:
+# bng_or_drvr: Select a group of paths to subsets
+# relative_instead_of_absolute_coverages: Coverage values relative to the suite the subsets were extracted from
+# min_sample_size, max_sample_size, step_size: The range in which coverage values are examined
+# covs_of_interest: coverage metrics that should be plotted, add their csv name ("speed_bins.csv") and/or "OBE"
+# Note: If you deviate from my folder structure, all the paths have to be adjusted manually!
 library(ggplot2)
 library(reshape2)
 library(cowplot)
 
-# whether bins with under 10 entries are removed
-cleanup_covs <- FALSE
-# select a dataset
+# Select a dataset ("bng" or "drvr")
 bng_or_drvr = "drvr"
-# select whether to plot obes or coverages
-obes_or_covs = "covs" #obes "#"covs"
-# relative to parent suite
+# Relative to parent suite
 relative_instead_of_absolute_coverages <- TRUE
-# print without legend
+# Print without legend
 without_legend <- TRUE
-# configure the steos at which neighborhood size sampling takes place
+# Configure the steos at which neighborhood size sampling takes place
 min_sample_size <- 1
 max_sample_size <- 30
 step_size <- 2
+# Whether bins with under 10 entries are removed
+cleanup_covs <- FALSE
+# Select whether to plot obes or coverages, leave it at "cov"
+obes_or_covs = "covs" #"obes" #"covs"
 
-# coverages of interest
+# Coverages of interest
 covs_of_interest <- c("OBE", "steering_bins.csv", "speed_bins.csv", 
                       "speed_steering_2d_bins_adjusted.csv",
                       "obe_2d.csv") 
-# this is the only metric I use with cleanup in the thesis
+# This is the only metric I use with cleanup in the thesis
 if (cleanup_covs){
   covs_of_interest <- c("speed_steering_2d_bins.csv")
 }
 
-# add paths to the subsets
+# Add paths to the subsets
+# All these have to adjusted manually if you deviate from my file location or naming!
+# Mind the groups of the paths.
 if(bng_or_drvr == "bng"){
   higher_level_folder <- "C:/CS1_R-Intro/div_bng5_only_results/"
   paths_lowdiv_obe <- c("experiments-beamng-ai-wo-minlen-wo-infspeed-lowdiv_random--la111",
@@ -62,7 +75,6 @@ if(bng_or_drvr == "bng"){
   parent_suite <- "C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001"
   png_save_path <- "C:/CS1_R-Intro/RQ4/bng_5_subsets"
 } else if (bng_or_drvr == "drvr"){
-  # dummy stuff, remove
   higher_level_folder <- "C:/CS1_R-Intro/div_drvr5_only_results/"
   paths_lowdiv_obe <- c("experiments-driver-ai-wo-minlen-wo-infspeed-lowdiv_random--la219",
                         "experiments-driver-ai-wo-minlen-wo-infspeed-lowdiv_random--la318",

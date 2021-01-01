@@ -1,11 +1,19 @@
-# print bins absolute or as percentage for a test
-# should be run in an environment, that supports window resizing (not RStudio)
-# too much of this is hardcoded and requires adjustments for small little changes
-# reimplementing using ggplot may have been much easier
+# Plots bin heat maps of a test 
+# Prints absolute or as percentage in the console
+# Used in RQ3
+# What to adjust:
+# The dataset, only BeamNG.AI used in the thesis
+# Number of dimensions, 1 or 2
+# Steering or speed (st_or_sp)
+# The test (only "random--la711" in thesis). Can be set to "random"
+# EQUAL_X_AXS: Use steering bins with uniform insted of non-uniform bins
+# Too much of the plots is hardcoded and requires adjustments for small little changes
+# Reimplementing using ggplot may have been much easier
 library(fields)
 
 # select a set
-setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
+#setwd("C:/CS1_R-Intro/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001")
+# only random--la711 of bng suite used in the thesis
 setwd("C:/CS1_R-Intro/experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001")
 
 # obe or two dimensions
@@ -113,7 +121,7 @@ rotate_1d <- function(x){
 font_mult <- 2
 dev.off()
 if (y_dim == 1){
-	dev.new(width=x_dim/2, height=2.65)
+	dev.new(width=x_dim/2, height=2.65, noRStudioGD=TRUE)
 	rotated <- rotate_1d(image_bins)
 	par(mar=c(7,4,4,1)+.1)  # margins bottom, left, top, right
 
@@ -136,7 +144,7 @@ if (y_dim == 1){
 			las= 2, cex.axis = font_mult)
 	}
 } else {
-	dev.new(width=x_dim+0.5, height=y_dim)
+	dev.new(width=x_dim+0.5, height=y_dim, noRStudioGD=TRUE)
 	rotated <- rotate(image_bins)
 	# TODO maybe use the upper, not lower border
 	rownames(rotated) <- predef_col_labels[1:length(predef_col_labels)-1]

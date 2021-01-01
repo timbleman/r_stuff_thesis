@@ -1,4 +1,6 @@
-# looks wheter closer input tests are also closer in output
+# Looks wheter closer input tests are also closer in output
+# Discussed in the Appendix 9.2.2
+# Never reached a useable state for the evaluation
 
 # without OBEs
 setwd("C:/CS1_R-Intro/experiments-driver-ai-no-obe-wo-minlen-wo-infspeed")
@@ -8,7 +10,7 @@ input_name = "jaccard_44alph.csv"
 output_name = "steering_speed_dist_single.csv"
 
 start_point <- "random--la1021"
-compare_point_sim <- 0.8 
+compare_point_sim <- 0.7 
 compare_point <- ""
 
 inm <- read.csv(input_name, check.names=FALSE, row.names=1)
