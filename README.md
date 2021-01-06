@@ -1,4 +1,30 @@
-## Prequisites
+## Preliminaries
+The R scripts included in this repository are used to evaluate data created for my bachelor thesis.
+The data has been created using https://github.com/timbleman/asfault_evaluator. 
+This repository is able to calculate similaries between roads and driver output and performs adaptive random sampling.
+The folders /div_bng5_only_results/ and /div_drvr5_only_results/ contain adaptive random sampling subsets created for the thesis.
+The others (/driver-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200818T120651Z-001/, /experiments-beamng-ai-wo-minlen-wo-infspeed-7-steering-4-len-20200821T084856Z-001/,
+/experiments-driver-ai-no-obe-wo-minlen-wo-infspeed/, /experiments-beamng-ai-no-obe-wo-minlen-wo-infspeed/) contain csv files created for 
+DriverAI and BeamNG.AI datasets with or without OBE-tests (Out of Bound Episodes).  
+
+## Prerequisites
+This list includes the R version and the libraries I used for evaluating my thesis.
+* R 4.0.2
+* ggplot2
+* hrbrthemes
+* vegan
+* egg
+* cowplot
+* dplyr
+* reshape2
+* fields
+* xtable
+
+## Usage
+Select one of the scripts from the list below.
+Configure the script according to the comments.
+Make sure that the paths are correct and the right names for loading csv files are used.
+Run the script. 
 
 ## The scripts and their purpose
 Over the course of writing my bachelor thesis, the evaluation performed in R grew much bigger than I anticipated.

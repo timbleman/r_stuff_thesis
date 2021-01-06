@@ -1,0 +1,15 @@
+coverage_measure,value
+speed_bins,0.8125
+speed_bins_cleanup,0.625
+steering_bins,1.0
+steering_bins_cleanup,0.4375
+steering_bins_non_uniform_percentile,1.0
+steering_bins_non_uniform_percentile_cleanup,1.0
+distance_bins,0.25
+distance_bins_cleanup,0.125
+speed_steering_2d_bins,0.23828125
+speed_steering_2d_bins_cleanup,0.0859375
+speed_steering_2d_bins_adjusted,0.56640625
+speed_steering_2d_bins_adjusted_cleanup,0.203125
+obe_2d,0.06
+obe_2d_cleanup,0.0
