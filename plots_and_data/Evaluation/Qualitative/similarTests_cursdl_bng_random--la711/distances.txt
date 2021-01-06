@@ -1,0 +1,4 @@
+random--la59: 0.85
+random--la318: 0.83
+random--la617: 0.65
+random--la62: 0.66

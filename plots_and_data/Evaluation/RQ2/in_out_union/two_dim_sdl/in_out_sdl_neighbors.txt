@@ -1,0 +1,9 @@
+sdl2 drvr:
+[1] "Threshold 0.98 avg neighbors: 1.88644688644689"
+[1] "Threshold 0.95 avg neighbors: 3.89377289377289"
+[1] "Threshold 0.9 avg neighbors: 8.23809523809524"
+[1] "Threshold 0.85 avg neighbors: 15.7619047619048"
+[1] "Threshold 0.8 avg neighbors: 37.8131868131868"
+[1] "Threshold 0.7 avg neighbors: 232.113553113553"
+[1] "Threshold 0.6 avg neighbors: 273"
+[1] "Threshold 0 avg neighbors: 273"

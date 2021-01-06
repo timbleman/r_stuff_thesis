@@ -1,0 +1,8 @@
+lcstr_obe_0_1_5_mm_7ang_bng:
+(0mm, 0.4thres, 2.7nbs), (1, 0.6, 2.3), (5, 0.95, 3.6)
+lcstr_obe_0_1_5_mm_7ang_drvr:
+(0, 0.95, 2.7), (1, 0.95, 4.3), (5, 0.95, 36)
+lcs_7ang_bng:
+(7ang, 0.8, 3.5)
+lcs_7ang_drvr:
+(7ang, 0.98, 6.0)

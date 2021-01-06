@@ -1,0 +1,59 @@
+***** jaccard
+*** one-dimensional
+jacc_44_steering_bin
+(bng,  0.98thres,  1.3nbs)
+(drvr, 0.98, 3.1)
+jacc_44_steering_sin
+(bng, 0.85, 2.8), (bng, 0.7, 16.5), (bng, 0.6, 30.1) 
+(drvr, 0.9, 5.7), (drvr, 0.7, 58.1), (drvr, 0.6, 114)
+jacc_44_steering_adj_bin
+(bng, 0.98, 1.3), (bng, 0.8, 6.8), (bng, 0.6, 30.1)
+(drvr, 0.98, 3.11)
+jacc_44_steering_adj_sin
+(bng, , )
+(drvr, , )
+jacc_44_speed_bin
+(bng, , )
+(drvr, , )
+jacc_44_speed_sin
+(bng, , )
+(drvr, , )
+*** two-dimesional
+jacc_44_steering_speed_bin
+(bng, , )
+(drvr, , )
+jacc_44_steering_speed_sin
+(bng, , )
+(drvr, , )
+jacc_44_steering_speed_adj_bin
+(bng, , )
+(drvr, , )
+jacc_44_steering_speed_adj_sin
+(bng, , )
+(drvr, 0.9, 5.7)(drvr, 0.85, 9.5)(drvr, 0.6, 114)
+
+*** jacc_44_bng ***
+[1] "Threshold 0.98 avg neighbors: 1.33898305084746"
+[1] "Threshold 0.95 avg neighbors: 1.33898305084746"
+[1] "Threshold 0.9 avg neighbors: 2.59322033898305"
+[1] "Threshold 0.85 avg neighbors: 2.76271186440678"
+[1] "Threshold 0.8 avg neighbors: 6.79661016949153"
+[1] "Threshold 0.7 avg neighbors: 16.4915254237288"
+[1] "Threshold 0.6 avg neighbors: 30.1525423728814"
+[1] "Threshold 0.5 avg neighbors: 45.7796610169492"
+[1] "Threshold 0 avg neighbors: 59"
+
+*** jacc_44_drvr ***
+[1] "Threshold 0.98 avg neighbors: 3.11721611721612"
+[1] "Threshold 0.95 avg neighbors: 3.11721611721612"
+[1] "Threshold 0.9 avg neighbors: 5.71794871794872"
+[1] "Threshold 0.85 avg neighbors: 9.53479853479853"
+[1] "Threshold 0.8 avg neighbors: 21.4835164835165"
+[1] "Threshold 0.7 avg neighbors: 58.1648351648352"
+[1] "Threshold 0.6 avg neighbors: 114.802197802198"
+[1] "Threshold 0.5 avg neighbors: 187.732600732601"
+[1] "Threshold 0 avg neighbors: 273"
+
+***** sdl
+
+***** reality check
