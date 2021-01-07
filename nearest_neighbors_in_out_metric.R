@@ -26,22 +26,22 @@ LENGTH_INSTEAD_OF_UNION_SHARED = TRUE
 
 # do not get filled, remaining from previous single metric plotting
 vals_of_interest <- c(
-				"0.9" = 0.0,
+        "0.95" = 0.0,
+        "0.95" = 0.0,
+        "0.9" = 0.0,
 				"0.85" = 0.0,
 				"0.8" = 0.0,
-				"0.75" = 0.0,
 				"0.7" = 0.0,
-				"0.65" = 0.0,
 				"0.6" = 0.0,
 				"0.5" = 0.0,
 				"0.0" = 0.0)
 # input metric used in the thesis
 # only jaccard_44 and sdl_2d_dist_44alph are used in the thesis
 #metric_in = "jaccard_28alph.csv"
-metric_in = "jaccard_44alph.csv"
+#metric_in = "jaccard_44alph.csv"
 #metric_in = "jaccard_11ang_4len.csv"
 #metric_in = "jaccard_60alph.csv"
-#metric_in = "sdl_2d_dist_44alph.csv"sampled_avg_nb_nonrep
+metric_in = "sdl2d_sw_44alph.csv"#sampled_Avg_Neighborhood_nonrep
 #metric_in = "sdl2d_sw_11ang_4len.csv"
 #metric_in = "sdl2d_sw_11ang_4len.csv"
 #metric_in = "cursdl_sw_11ang.csv"
@@ -77,7 +77,7 @@ len_observations = length(vals_of_interest)*length(similarity_matrix)
 t_holds_repeated <- rep(0, len_observations)
 
 # sample neighborhood for both distances
-sampled_avg_nb <- rep(0, len_observations)
+sampled_Avg_Neighborhood <- rep(0, len_observations)
 
 # vector to gather all ratio vals, for both
 all_ratios_vec <- rep(0, len_observations)
@@ -161,7 +161,7 @@ fill_ratio_nb_io <- function(start_index, metric_in_name, metric_out_name){
 
 		# repeat the number of neighbors value for the dataframe
 		for (i in last_index:start_index-1){
-			sampled_avg_nb[i] <<- avg_num_nb_normalized
+			sampled_Avg_Neighborhood[i] <<- avg_num_nb_normalized
 		}
 	}
 }
@@ -170,13 +170,13 @@ fill_ratio_nb_io(1, metric_in, metric_out)
 
 dframe_bxplt <- data.frame(
 	Threshold = t_holds_repeated,
-	Union_Ratios = all_ratios_vec,
-	Avg_NB = sampled_avg_nb
+	Input_Output_Ratio = all_ratios_vec,
+	Avg_Neighborhood = sampled_Avg_Neighborhood
 )
 
 dframe_bxplt$Threshold <- as.factor(dframe_bxplt$Threshold) 
 
-bx_plots <- ggplot(dframe_bxplt, aes(x=Threshold, y=Union_Ratios)) +
+bx_plots <- ggplot(dframe_bxplt, aes(x=Threshold, y=Input_Output_Ratio)) +
 	geom_boxplot(fill="#F8766D") + 
 	scale_x_discrete(limits=rev(levels(as.factor(dframe_bxplt$Threshold))))
 
@@ -190,17 +190,17 @@ get_nb_values <- function(sampled_nbs, vals_of_interest){
   return(nbs_at_stps)
 }
 
-sampled_avg_nb_non_rep <- get_nb_values(sampled_avg_nb, vals_of_interest)
-#names(sampled_avg_nb_non_rep) <- names(vals_of_interest)
-names(sampled_avg_nb_non_rep)[length(sampled_avg_nb_non_rep)] = "0"
+sampled_Avg_Neighborhood_non_rep <- get_nb_values(sampled_Avg_Neighborhood, vals_of_interest)
+#names(sampled_Avg_Neighborhood_non_rep) <- names(vals_of_interest)
+names(sampled_Avg_Neighborhood_non_rep)[length(sampled_Avg_Neighborhood_non_rep)] = "0"
 dframe_lnplt <- data.frame(
-	Threshold = names(sampled_avg_nb_non_rep),
-	Avg_NB = sampled_avg_nb_non_rep
+	Threshold = names(sampled_Avg_Neighborhood_non_rep),
+	Avg_Neighborhood = sampled_Avg_Neighborhood_non_rep
 )
 dframe_lnplt$Threshold <- as.factor(dframe_lnplt$Threshold)
 
 ln_plots <- ggplot(dframe_lnplt, aes(x=Threshold)) +
-	geom_path(aes(y=Avg_NB, group=1), color="#F8766D", size=2) +
+	geom_path(aes(y=Avg_Neighborhood, group=1), color="#F8766D", size=2) +
 	scale_x_discrete(limits=rev(levels(as.factor(dframe_bxplt$Threshold))))
 
 
@@ -210,13 +210,15 @@ dev.new(width = wid, height = hei, unit="px", noRStudioGD=TRUE)
 # change to font size of the ggplots
 font_size <- 20
 ln_plots <- ln_plots + theme(text = element_text(size=font_size))
-bx_plots <- bx_plots + theme(text = element_text(size=font_size))
+bx_plots <- bx_plots + theme(text = element_text(size=font_size), 
+                             axis.title.x=element_blank(),
+                             axis.text.x=element_blank())
 egg::ggarrange(bx_plots, ln_plots)
 
 # old plotting
-#ggplot(dframe_bxplt, aes(x=Threshold, y=Union_Ratios)) +
+#ggplot(dframe_bxplt, aes(x=Threshold, y=Input_Output_Ratio)) +
 #	geom_boxplot() + 
-#	geom_line(aes(y=Avg_NB, group=1), size=2) + 
+#	geom_line(aes(y=Avg_Neighborhood, group=1), size=2) + 
 #	scale_x_discrete(limits=rev(levels(as.factor(dframe_bxplt$Threshold))))
 
 
