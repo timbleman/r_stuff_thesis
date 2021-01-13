@@ -10,6 +10,7 @@
 # min_sample_size, max_sample_size, step_size: The range in which coverage values are examined
 # covs_of_interest: coverage metrics that should be plotted, add their csv name ("speed_bins.csv") and/or "OBE"
 # Note: If you deviate from my folder structure, all the paths have to be adjusted manually!
+# The paths should be shared between this script and rand_samp_subset_obe_and_cov.R, for now you have to copy and paste.
 library(ggplot2)
 library(reshape2)
 library(cowplot)
